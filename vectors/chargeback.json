@@ -1,0 +1,369 @@
+{
+ "version": "0.7.0",
+ "amounts": [
+  {
+   "price": 1000000,
+   "rate": 150,
+   "premium": 15000,
+   "fee": 50000,
+   "counted": 1050000
+  },
+  {
+   "price": 1000000,
+   "rate": 1,
+   "premium": 100,
+   "fee": 50000,
+   "counted": 1050000
+  },
+  {
+   "price": 19,
+   "rate": 150,
+   "premium": 0,
+   "fee": 0,
+   "counted": 19
+  },
+  {
+   "price": 100000,
+   "rate": 10000,
+   "premium": 100000,
+   "fee": 5000,
+   "counted": 105000
+  }
+ ],
+ "rooms": [
+  {
+   "name": "a fresh stake at 5,000 coins a dollar",
+   "stake": 10000000000,
+   "usd_reserve": 1000000,
+   "coin_reserve": 5000000000,
+   "open": 0,
+   "owed": 0,
+   "room": 2000000
+  },
+  {
+   "name": "less what open purchases could cost",
+   "stake": 10000000000,
+   "usd_reserve": 1000000,
+   "coin_reserve": 5000000000,
+   "open": 1050000,
+   "owed": 0,
+   "room": 950000
+  },
+  {
+   "name": "less what is owed, rounded up",
+   "stake": 10000000000,
+   "usd_reserve": 1000000,
+   "coin_reserve": 5000000000,
+   "open": 0,
+   "owed": 5001,
+   "room": 1999998
+  },
+  {
+   "name": "a higher price gives more room",
+   "stake": 10000000000,
+   "usd_reserve": 2000000,
+   "coin_reserve": 5000000000,
+   "open": 0,
+   "owed": 0,
+   "room": 4000000
+  }
+ ],
+ "settlements": [
+  {
+   "name": "delivers, deposit paid",
+   "price": 1000000,
+   "deposit": 50000,
+   "verdict": 1,
+   "to_buyer": 0,
+   "deposit_back": 0,
+   "deposit_to_replayer": 50000,
+   "fee_from_cover": 0,
+   "owed": 0
+  },
+  {
+   "name": "delivers, first chargeback",
+   "price": 1000000,
+   "deposit": 0,
+   "verdict": 1,
+   "to_buyer": 0,
+   "deposit_back": 0,
+   "deposit_to_replayer": 0,
+   "fee_from_cover": 50000,
+   "owed": 50000
+  },
+  {
+   "name": "does not deliver, deposit paid",
+   "price": 1000000,
+   "deposit": 50000,
+   "verdict": 2,
+   "to_buyer": 1000000,
+   "deposit_back": 50000,
+   "deposit_to_replayer": 0,
+   "fee_from_cover": 50000,
+   "owed": 1050000
+  },
+  {
+   "name": "empty, first chargeback",
+   "price": 1000000,
+   "deposit": 0,
+   "verdict": 3,
+   "to_buyer": 1000000,
+   "deposit_back": 0,
+   "deposit_to_replayer": 0,
+   "fee_from_cover": 50000,
+   "owed": 1050000
+  },
+  {
+   "name": "never happens",
+   "price": 1000000,
+   "deposit": 50000,
+   "verdict": null,
+   "to_buyer": 1000000,
+   "deposit_back": 50000,
+   "deposit_to_replayer": 0,
+   "fee_from_cover": 0,
+   "owed": 1000000
+  }
+ ],
+ "replay": {
+  "chargeback": "53112d5bb6ae22a3377363e0627cc0c3d32f9b516aea884dc8ba7e649d3726a9",
+  "entropy": "d390f88b3e7f7d6d5ee37af3a5ef79c4aff39289cb4ba38e3d95698f89807349",
+  "service": "https://sandbox.example.net/run/python",
+  "members": 5,
+  "committed_slot": 1000,
+  "seeds": [
+   "0fc25fca895ade97b7f09a5ea14c4713596980f0a5eb6cc08e9d0509dc6556b5",
+   "5e2b30319154eb975532a7a18e0125e65d39ddf3a7d5ddec0675a0f0f3670d3e"
+  ],
+  "draws": [
+   1,
+   2,
+   5,
+   2,
+   4,
+   1,
+   5,
+   2,
+   4,
+   1,
+   3,
+   5,
+   5,
+   4,
+   1,
+   4
+  ],
+  "seats": [
+   {
+    "name": "no one passed over",
+    "seats": [
+     {
+      "key": "A",
+      "since": 900,
+      "member": 21
+     },
+     {
+      "key": "B",
+      "since": 900,
+      "member": 24
+     },
+     {
+      "key": "C",
+      "since": 900,
+      "member": 27
+     },
+     {
+      "key": "D",
+      "since": 900,
+      "member": 30
+     },
+     {
+      "key": "E",
+      "since": 900,
+      "member": 33
+     }
+    ],
+    "passed_over_keys": [],
+    "declined": [],
+    "seat": 1
+   },
+   {
+    "name": "the buyer's key holds the first seat drawn",
+    "seats": [
+     {
+      "key": "A",
+      "since": 900,
+      "member": 21
+     },
+     {
+      "key": "B",
+      "since": 900,
+      "member": 24
+     },
+     {
+      "key": "C",
+      "since": 900,
+      "member": 27
+     },
+     {
+      "key": "D",
+      "since": 900,
+      "member": 30
+     },
+     {
+      "key": "E",
+      "since": 900,
+      "member": 33
+     }
+    ],
+    "passed_over_keys": [
+     "A"
+    ],
+    "declined": [],
+    "seat": 2
+   },
+   {
+    "name": "the membership in the first seat drawn declined before",
+    "seats": [
+     {
+      "key": "A",
+      "since": 900,
+      "member": 21
+     },
+     {
+      "key": "B",
+      "since": 900,
+      "member": 24
+     },
+     {
+      "key": "C",
+      "since": 900,
+      "member": 27
+     },
+     {
+      "key": "D",
+      "since": 900,
+      "member": 30
+     },
+     {
+      "key": "E",
+      "since": 900,
+      "member": 33
+     }
+    ],
+    "passed_over_keys": [],
+    "declined": [
+     21
+    ],
+    "seat": 2
+   },
+   {
+    "name": "a seat whose number is a declined membership's is not passed over",
+    "seats": [
+     {
+      "key": "A",
+      "since": 900,
+      "member": 21
+     },
+     {
+      "key": "B",
+      "since": 900,
+      "member": 24
+     },
+     {
+      "key": "C",
+      "since": 900,
+      "member": 27
+     },
+     {
+      "key": "D",
+      "since": 900,
+      "member": 30
+     },
+     {
+      "key": "E",
+      "since": 900,
+      "member": 33
+     }
+    ],
+    "passed_over_keys": [],
+    "declined": [
+     1
+    ],
+    "seat": 1
+   },
+   {
+    "name": "the first seat drawn was sat in since",
+    "seats": [
+     {
+      "key": "A",
+      "since": 1001,
+      "member": 21
+     },
+     {
+      "key": "B",
+      "since": 900,
+      "member": 24
+     },
+     {
+      "key": "C",
+      "since": 900,
+      "member": 27
+     },
+     {
+      "key": "D",
+      "since": 900,
+      "member": 30
+     },
+     {
+      "key": "E",
+      "since": 900,
+      "member": 33
+     }
+    ],
+    "passed_over_keys": [],
+    "declined": [],
+    "seat": 2
+   },
+   {
+    "name": "everyone passed over",
+    "seats": [
+     {
+      "key": "A",
+      "since": 900,
+      "member": 21
+     },
+     {
+      "key": "B",
+      "since": 900,
+      "member": 24
+     },
+     {
+      "key": "C",
+      "since": 900,
+      "member": 27
+     },
+     {
+      "key": "D",
+      "since": 900,
+      "member": 30
+     },
+     {
+      "key": "E",
+      "since": 900,
+      "member": 33
+     }
+    ],
+    "passed_over_keys": [
+     "A",
+     "B",
+     "C",
+     "D",
+     "E"
+    ],
+    "declined": [],
+    "seat": null
+   }
+  ]
+ }
+}

@@ -1,8 +1,8 @@
 # Sasona protocol
 
-**Version 0.6.0.** This version specifies the draw (section 1), the committed question (section 2), second readings (section 3), members (section 4), challenges (section 5) and the ranking (section 6).
+**Version 0.7.0.** This version specifies the draw (section 1), the committed question (section 2), second readings (section 3), members (section 4), challenges (section 5), the ranking (section 6) and chargebacks (section 7).
 
-0.6.0 adds section 6. 0.5.0 added sections 4 and 5, and limits a reply to its first 10,000 bytes (2.4); no reading so far had a reply that long. 0.4.0 added section 3. 0.3.0 added section 2. 0.2.0 added that a list can be drawn once (1.3, 1.8) and stated two limits more plainly (1.7). Every value 0.1.0 computes is unchanged.
+0.7.0 adds section 7, and a reading now records where its service asks to be paid (2.5). 0.6.0 added section 6. 0.5.0 added sections 4 and 5, and limits a reply to its first 10,000 bytes (2.4); no reading so far had a reply that long. 0.4.0 added section 3. 0.3.0 added section 2. 0.2.0 added that a list can be drawn once (1.3, 1.8) and stated two limits more plainly (1.7). Every value 0.1.0 computes is unchanged.
 
 The words **MUST** and **MUST NOT** mark rules that change a result. An implementation that does otherwise computes different values from every other one and is not conformant.
 
@@ -214,7 +214,7 @@ A service that returned no reply at all, because it could not be reached or refu
 
 1. The member commits the question hash on chain for one service of a drawn round.
 2. The member sends that service the code, and keeps the reply.
-3. The member reveals the nonce, the reply hash and the verdict.
+3. The member reveals the nonce, the reply hash and the verdict, and the address the service asks to be paid at, if it names one (7.1).
 
 The reply hash **MUST** be of the first 10,000 bytes of what came back (2.4), never more. The program cannot see the reply, and a hash of a longer one is a reading its member can never back if challenged.
 
@@ -242,7 +242,7 @@ A reading not revealed within 9,000 slots, about an hour, can only be marked **l
 | `sha256(reply)` equals the recorded reply hash | the reply shown is not the one that was read |
 | the verdict rule on the reply gives the recorded verdict | the verdict was misreported |
 | the nonce's record names this reading | the nonce was used by an earlier reading, and this one does not count |
-| the reading's service is, byte for byte, one of its round's published picks | the service was not drawn, or was spelt differently to be tested twice |
+| the reading's service is, byte for byte, one of its round's published picks, or the reading is a replay drawn as 7.4 says | the service was not drawn, or was spelt differently to be tested twice |
 | the reader holds the membership drawn for the service (4.3) | the reader chose themselves |
 | no challenge to the reading was upheld (5.3) | its member could not back it |
 
@@ -356,7 +356,7 @@ Readings taken before version 0.5.0 have no membership. Their round's opener too
 
 ### 4.4 Leaving
 
-A membership asks to leave, and leaves its seat at once. Its stake comes back after 45 days' notice. A reading can be challenged for 30 days after it is revealed, and a challenge answered for 7 more (section 5), so the notice outlasts every challenge a member's readings can get. A membership with an open challenge cannot take its stake back until the challenge is settled.
+A membership asks to leave, and leaves its seat at once. Its stake comes back after 45 days' notice. A reading can be challenged for 30 days after it is revealed, and a challenge answered for 7 more (section 5), so the notice outlasts every challenge a member's readings can get. A membership with an open challenge, a covered purchase still open, or anything owed to the cover (section 7) cannot take its stake back until that is settled.
 
 ### 4.5 What membership does and does not prove
 
@@ -395,11 +395,13 @@ If no answer holds by the deadline, anyone may uphold the challenge. Then:
 - the reading no longer counts
 - the membership loses its whole stake, and its seat if it still has one
 - the challenger gets the bond back, and a tenth of the stake
-- the rest of the stake is held to pay back buyers of purchases made on false readings
+- the rest of the stake goes into the cover (part 1), first to pay back what the member owes it (7.5)
+
+What the member owes the cover comes out first, and the challenger's tenth is a tenth of what is left. If nobody holds any of the cover, the coin is burned instead. It was never in the pool, so the price does not move.
 
 If the stake has already come back to the member, the reading still stops counting.
 
-> **Temporary.** Until chargebacks are on chain (part 7), the held stake cannot leave. Where it goes is decided there. The stake, the bond and the challenger's tenth are devnet figures: at these numbers a challenge can cost more than it wins. They are set together, from what readings are worth, once purchases are on chain (parts 7 and 8).
+> **Temporary.** The stake, the bond and the challenger's tenth are devnet figures: at these numbers a challenge can cost more than it wins. They are set together, from what readings are worth, once purchases are on chain (parts 7 and 8).
 
 ### 5.4 What a challenge does and does not prove
 
@@ -478,7 +480,82 @@ Whoever ranks needs, besides the program's accounts: each round's published list
 | the quote was set by the key that took the reading | someone else priced a reading they did not take |
 | the order follows 6.3 | the services were reordered |
 
-## 7. What this version does not specify
+## 7. Purchases and chargebacks
+
+A buyer whose purchase did not deliver is paid back. Nobody decides it by opinion: a member drawn for it tests the service again, and the rule of section 2 says whether it delivered. The cover pays the buyer at once, and the member who insured the purchase pays the cover back, out of their stake.
+
+### 7.1 Where a service is paid
+
+When a member reads a service, they also record the address the service asks to be paid at. A purchase covered on that reading can be paid to that address only. Without this, a buyer could name themselves as the merchant, buy nothing, and claim the price back.
+
+### 7.2 A covered purchase
+
+A **covered purchase** is recorded on chain when it is made. It names the reading whose quote covers it, and the program refuses it unless that quote stands as far as the program can see (6.1), and unless the price is at least a minimum the network sets. The buyer pays, through the program:
+
+- the **price**, to the address recorded on the covering reading, where it settles for good. The merchant is never asked for it back
+- the **premium**, the price times the quote's rate in basis points, divided by 10,000 and rounded down, to the member who set the quote
+
+The buyer names the highest rate they accept, and the purchase is refused if the quote was raised past it before the purchase landed.
+
+A member insures only up to their stake. Their **room to insure** is their stake, valued in dollars at the pool's price, less what their open purchases could cost them, less what they owe the cover (7.5). An open purchase could cost its price and the replayer's 5%, and a purchase that would take that past the room is refused. A purchase is open until its 7 days to charge back have passed, or its chargeback is settled. A member with purchases open, or owing the cover, cannot take their stake back (4.4).
+
+Nothing in the program lowers the pool's price (part 1): no instruction sells coin into the pool, and a claim burns coin in proportion to the dollars it takes. So a stake's value in dollars can only rise after it is counted. This is a rule the program **MUST** keep: an instruction that lowered the price would let members insure more than their stakes are worth. Anyone can raise the price, and every stake's room with it, by adding dollars to the pool (part 1), but that money stays in the pool for good.
+
+### 7.3 A chargeback
+
+Within 7 days of the purchase, its buyer may ask for the price back, once, with a **deposit** of 5% of the price. A chargeback needs no deposit if no chargeback, with a deposit or without, was made on that service in the 30 days before it: the first buyer to find a service failing should not pay to say so. A service is its endpoint's exact bytes, so two spellings of one address count as two services.
+
+### 7.4 The replay
+
+A chargeback is settled by a **replay**: a reading of the service, like any other (section 2), taken by a member drawn for that chargeback alone.
+
+- **The draw.** A draw records the slot it is made in and the number of seats then. Its seed is `sha256("sasona/replay/v1" || chargeback || u32_be(draw number) || entropy)`, where `chargeback` is the chargeback's 32-byte identifier, draws are numbered from 0, and the entropy is taken as in 1.4 from the first slot 32 after the draw's. The seat is then drawn as in 4.3, with this seed in place of the round's final seed and the draw's number of seats as M. No member holds a seed back to see it first. Anyone may record the entropy, and the member drawn records it when they commit their reading. The reader is drawn as in 4.3, passing over every seat held by the buyer's key or by the key that set the quote, and every seat held by a membership that already declined this chargeback.
+- **A decline.** A draw **counts** once its hour to read (4.3) has passed with no reading committed, or with one committed and never revealed (2.5). The membership drawn then counts as declined, or, for a reading committed and never revealed, the membership that committed it, whatever seat either holds later. A draw whose entropy was never recorded, and can no longer be, also counts once the same hour, from the entropy's slot, has passed, but its seat cannot be known, and nobody is passed over for it. Then anyone may draw again. So whoever dislikes the seat a draw will give can let it pass, but only by using up one of the draws.
+- **The end.** After 8 draws that count, or 7 days after the chargeback, whichever comes first, the chargeback is settled as if the replay had not delivered. A replay already committed is waited for until its hour to reveal is over. Finding out is the network's burden, not the buyer's.
+- **The pay.** The member who replays is paid 5% of the price, rounded down, whatever their verdict. The deposit is the same amount.
+
+### 7.5 What the replay settles
+
+| The replay | The buyer | The replayer's 5% | The member who set the quote |
+|---|---|---|---|
+| delivers | is not paid back; the deposit is the replayer's 5% | from the deposit, or, for a first chargeback, from the cover | owes the cover the replayer's 5% for a first chargeback |
+| does not deliver, or never happens | is paid back the price by the cover, and the deposit from where it was held | from the cover | owes the cover all of it |
+
+The cover pays as a claim does (part 1): dollars leave the pool, and equal coin is burned from the pool and from the cover, so the price does not move. What the member owes the cover is that coin. It is taken from their stake into the cover once the covering reading can no longer be challenged (5.1), so a stake cannot be turned into dollars early by a member charging back their own purchase while a challenge to their reading could still come. A membership left with less than a whole stake (4.1) leaves its seat and starts its notice to leave (4.4).
+
+When a reading is shown false (section 5), its member's taken stake goes into the cover, first to pay back what they owe it (5.3).
+
+The cover pays only what it can (part 1): a claim may not empty it, nor take more dollars than the pool holds. A chargeback the cover cannot pay yet waits, and is paid when it can.
+
+### 7.6 Replays among the other readings
+
+A replay is a reading, and counts as one (2.7) if its draw follows 7.4: it stands in place of being one of a round's picks. It is weighed in the ranking (section 6) like any other, so a replay that fails is one key towards a failing pair. Its reader may quote on it.
+
+### 7.7 What a chargeback does and does not prove
+
+- **The insurer pays for decay, which departs from the paper.** The paper puts a service that worked and stopped on the cover, with nobody at fault. Here the member who insured it pays the cover back. A replay cannot tell a reading that was false from a service that decayed, and if the cover paid for decay, a member could quote a service, collect the premiums, and leave every loss to the depositors. Whether the reading was false stays a separate question, for section 5.
+- **The replay tests the service now, with the network's own question, not the buyer's request.** A buyer's request can be any code, and there is no rule anyone can run to say whether a reply to it was delivery. So a chargeback pays back any covered purchase of a service that fails now, whether or not that purchase failed, and pays nothing for one that failed and works again. One replay decides, so a service that fails some of the time can go either way.
+- **A replay that never happens pays the buyer,** whether the members drawn were working with someone or only offline, and the insurer pays for it.
+- **A replayer can make up their verdict.** Working with the member who set the quote, they can make up a reply that passes, and the buyer loses the deposit. Working with the buyer, they can make up one that fails, and the member pays for a service that works. Section 5 cannot catch a reply made up well (5.4). The draw, and passing over the buyer's and the quoter's seats, is all that stands in the way; a buyer can let up to 7 draws pass to look for a friend (7.4).
+- **Someone has to draw again.** Draws do not repeat on their own. A member whose quote is charged back has every reason to keep drawing until a replay happens, and if nobody does within 7 days, they pay.
+- **A first chargeback costs the member who set the quote.** It needs no deposit, so the replayer's 5% is the member's. A rival can buy once every 30 days at the minimum price and charge it back. The minimum price is what bounds that.
+- **The payout address is its reader's word,** and the reader is usually the one who quotes. A member who records their own address and buys from themselves only moves dollars to themselves that their own stake pays back.
+- **Who is passed over.** The draw passes over the buyer's and the quoting member's seats, and those that declined. Other members who quote the same service, or who have chargebacks open against it, are not passed over, and nor is the service's operator: the program cannot see everyone who holds a position.
+- **The draw's entropy** is a slot's hash, with the limits 1.7 states.
+- **A quote can stop standing in ways the program cannot see** (6.1). A purchase made under it is still covered, and its member still pays.
+- **A challenge upheld while a chargeback is open** takes the stake before it can pay the cover back. Nine tenths of it go to the cover anyway, and the challenger's tenth is out of reach.
+- **Not covered yet.** The paper's further rules are not part of this version: a service failing some of the time marked as such, and a service with too many chargebacks needing a larger stake, then removed.
+
+### 7.8 Checking a chargeback
+
+| Check | If it fails |
+|---|---|
+| the purchase was paid to the address its covering reading recorded, under a quote that stood (6.2) | the buyer was paid back on a purchase nobody insured |
+| each draw follows 7.4 from its slot, and passes over the seats 7.4 names | the replay was chosen |
+| what was paid, and by whom, follows 7.5 from the replay's verdict or its absence | the outcome was misreported |
+| what the member owed was taken from their stake once their reading could no longer be challenged | an insurer was let off |
+
+## 8. What this version does not specify
 
 - **What goes into a round's list.** Which services are open for testing at a time, and how demand puts them there, comes with the parts that bring members and questions on chain.
 - **Who opens rounds and how often.** For now anyone may open one, for a bond, and it proves nothing except that its draw was fair.
@@ -486,7 +563,7 @@ Whoever ranks needs, besides the program's accounts: each round's published list
 
 ## Test values
 
-[`vectors/draw.json`](vectors/draw.json), [`vectors/question.json`](vectors/question.json), [`vectors/pair.json`](vectors/pair.json), [`vectors/reader.json`](vectors/reader.json) and [`vectors/ranking.json`](vectors/ranking.json) hold inputs, the results every implementation must produce, and what every implementation must refuse:
+[`vectors/draw.json`](vectors/draw.json), [`vectors/question.json`](vectors/question.json), [`vectors/pair.json`](vectors/pair.json), [`vectors/reader.json`](vectors/reader.json) and [`vectors/ranking.json`](vectors/ranking.json) and [`vectors/chargeback.json`](vectors/chargeback.json) hold inputs, the results every implementation must produce, and what every implementation must refuse:
 
 ```bash
 python reference/check.py

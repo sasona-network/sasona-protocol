@@ -113,6 +113,26 @@ for c in KV["premiums"]:
 for c in KV["rankings"]:
     check(f"ranking: {c['name']}", [list(x) for x in rk.rank(c["services"], c["now"])] == c["ranking"])
 
+import chargeback as cb  # noqa: E402
+
+CV = json.loads((Path(__file__).parent.parent / "vectors" / "chargeback.json").read_text(encoding="ascii"))
+for c in CV["amounts"]:
+    check(f"chargeback: price {c['price']} at {c['rate']} bps",
+          (cb.premium(c["price"], c["rate"]), cb.fee(c["price"]), cb.counted(c["price"])) == (c["premium"], c["fee"], c["counted"]))
+for c in CV["rooms"]:
+    check(f"room to insure: {c['name']}", cb.room(c["stake"], c["usd_reserve"], c["coin_reserve"], c["open"], c["owed"]) == c["room"])
+for c in CV["settlements"]:
+    want = (c["to_buyer"], c["deposit_back"], c["deposit_to_replayer"], c["fee_from_cover"], c["owed"])
+    check(f"settlement: {c['name']}", cb.settle(c["price"], c["deposit"], c["verdict"]) == want)
+R = CV["replay"]
+ident, entropy = bytes.fromhex(R["chargeback"]), bytes.fromhex(R["entropy"])
+check("replay: the seeds", [cb.replay_seed(ident, d, entropy).hex() for d in (0, 1)] == R["seeds"])
+check("replay: the draws", [rd.s(bytes.fromhex(R["seeds"][0]), R["service"], a, R["members"]) for a in range(rd.MAX_ATTEMPTS)] == R["draws"])
+for c in R["seats"]:
+    got = cb.replay_seat(bytes.fromhex(R["seeds"][0]), R["service"], R["members"], R["committed_slot"], c["seats"],
+                         set(c["passed_over_keys"]), set(c["declined"]))
+    check(f"replay seat: {c['name']}", got == c["seat"])
+
 print()
 print(f"{failures} failed" if failures else "all vectors match")
 sys.exit(1 if failures else 0)

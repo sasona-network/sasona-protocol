@@ -7,6 +7,7 @@
 //! reference. Both are ours; an implementation by somebody else is what
 //! would really test the specification.
 
+pub mod chargeback;
 pub mod pair;
 pub mod question;
 pub mod ranking;
