@@ -93,6 +93,17 @@ for c in PV["counting"]:
 for c in PV["latest"]:
     check(f"latest reading: {c['name']}", pr.latest(c["readings"], c["round_committed_slot"]) == c["latest"])
 
+import reader as rd  # noqa: E402
+
+RV = json.loads((Path(__file__).parent.parent / "vectors" / "reader.json").read_text(encoding="ascii"))
+check("reader: at most 16 attempts", RV["max_attempts"] == rd.MAX_ATTEMPTS)
+for c in RV["cases"]:
+    f = bytes.fromhex(c["final_seed"])
+    m = len(c["memberships"])
+    draws = [rd.n(f, c["service"], a, m) for a in range(rd.MAX_ATTEMPTS)] if m else []
+    check(f"reader: {c['name']}: the draws", draws == c["attempts"])
+    check(f"reader: {c['name']}: membership {c['reader']}", rd.reader(f, c["service"], c["memberships"], c["first_reader"]) == c["reader"])
+
 print()
 print(f"{failures} failed" if failures else "all vectors match")
 sys.exit(1 if failures else 0)

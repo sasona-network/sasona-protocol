@@ -1,8 +1,8 @@
 # Sasona protocol
 
-**Version 0.4.0.** This version specifies the draw (section 1), the committed question (section 2) and second readings (section 3).
+**Version 0.5.0.** This version specifies the draw (section 1), the committed question (section 2), second readings (section 3), members (section 4) and challenges (section 5).
 
-0.4.0 adds section 3. 0.3.0 added section 2. 0.2.0 added that a list can be drawn once (1.3, 1.8) and stated two limits more plainly (1.7). Every value 0.1.0 computes is unchanged.
+0.5.0 adds sections 4 and 5. 0.4.0 added section 3. 0.3.0 added section 2. 0.2.0 added that a list can be drawn once (1.3, 1.8) and stated two limits more plainly (1.7). Every value 0.1.0 computes is unchanged.
 
 The words **MUST** and **MUST NOT** mark rules that change a result. An implementation that does otherwise computes different values from every other one and is not conformant.
 
@@ -224,7 +224,7 @@ A reading not revealed within 9,000 slots, about an hour, can only be marked **l
 
 - **The question was fixed first.** It was committed before the reveal, so it was not chosen to fit the reply, and it is the fair question for a nonce never used before.
 - **The record agrees with itself.** Anyone holding the reply can hash it, compare the hash, and run the verdict rule again. The reply is what the network sells, so only its hash goes on chain.
-- **The member's word is still the member's word.** The member alone holds the reply, and the service does not sign it. A dishonest member could write down any reply they liked, containing the answer or not, and everything above would still check out. What makes that costly is not this section: it is the second readings of part 4 and the stakes of part 5. A web proof of the reply, which would take the member out of it, is a later version.
+- **The member's word is still the member's word.** The member alone holds the reply, and the service does not sign it. A dishonest member could write down any reply they liked, containing the answer or not, and everything above would still check out. What makes that costly is not this section: it is second readings (section 3), the stake a member can lose (section 5), and a buyer's chargeback (part 7). A web proof of the reply, which would take the member out of it, is a later version.
 - **`delivered` means the answer came back, not how.** A service that recognises this program and computes the hash without running any code also passes. An `execute` reading checks the answer the code produces.
 - A reading does not prove when the service was called.
 - A member can still choose not to reveal a reading they dislike. It is then marked lapsed, in public.
@@ -239,6 +239,8 @@ A reading not revealed within 9,000 slots, about an hour, can only be marked **l
 | the verdict rule on the reply gives the recorded verdict | the verdict was misreported |
 | the nonce's record names this reading | the nonce was used by an earlier reading, and this one does not count |
 | the reading's service is, byte for byte, one of its round's published picks | the service was not drawn, or was spelt differently to be tested twice |
+| the reader holds the membership drawn for the service (4.3) | the reader chose themselves |
+| no challenge to the reading was upheld (5.3) | its member could not back it |
 
 ## 3. Second readings
 
@@ -282,9 +284,9 @@ It counts only if:
 
 ### 3.4 What a pair does not prove
 
-- **A different key is not a different person.** Until members stake on what they read, one person can read with two keys. Part 5 is what makes the second reader someone with something to lose.
+- **A different key is not a different person** (4.5). What the second reader has to lose is their stake (section 5).
 - **Both readings are still their readers' word**, as 2.6 says of every reading.
-- **Which reading is re-read is fixed, but not when.** Whoever opens a re-read round picks the moment, and so which reading is the latest at that moment. Anyone, the service included, can also take a reading of a service just before a re-read round opens, and make theirs the one that gets re-read. Until members are drawn to readings, as part 5 does, the timing is the opener's.
+- **Which reading is re-read is fixed, but not when.** Whoever opens a re-read round picks the moment, and so which reading is the latest at that moment. Someone can also take a reading of a service just before a re-read round opens, and make theirs the one that gets re-read, but only if they are drawn to read it (4.3).
 
 ### 3.5 Checking a pair
 
@@ -297,7 +299,104 @@ It counts only if:
 | the readers differ | it is a reading checking itself |
 | the recorded outcome follows 3.3 from the two verdicts | the outcome was misreported |
 
-## 4. What this version does not specify
+## 4. Members
+
+A member is someone with a stake locked in the network. Readings are taken by members, and the member who reads a service is drawn, not chosen.
+
+### 4.1 Memberships
+
+A **membership** is one stake of a fixed size, locked in coin. Memberships are numbered from 1, in the order they were taken.
+
+One key may hold several. Every draw below is over memberships, so a key with three has three chances, and it locked three stakes to get them. Splitting the same coins over more keys buys nothing.
+
+A membership is **active** from when it is taken until it asks to leave or loses its stake. Only an active membership can be drawn to read.
+
+### 4.2 A round's roster
+
+When a round is committed, the program records **M**, the number of memberships taken so far. The round's roster is memberships 1 to M. A membership taken later does not exist for that round.
+
+### 4.3 Drawing the reader
+
+For a service `S` of a drawn round:
+
+```
+n(a) = 1 + ( int( HMAC-SHA256( key = final_seed,
+                               message = "reader" || sha256(S) || u32_be(a) ),
+                  big-endian over all 32 bytes ) mod M )
+```
+
+for attempts `a = 0, 1, 2, ...`. The reader is the first `n(a)` that is active when the reading is committed and, for a second reading, is not held by the key that took the first reading. At most 16 attempts are made. If none of them qualifies, nobody reads `S` in this round.
+
+- the key is the round's **final seed** (1.5), the same seed its picks were drawn with
+- the label is the ASCII bytes `reader`, then the 32 bytes of `sha256(S)`, then the attempt as 4 bytes, big-endian
+- a membership drawn again is skipped again; nothing is removed
+- a round with `M = 0` has no readers
+
+Readings taken before version 0.5.0 have no membership. Their round's opener took them.
+
+The program **MUST** refuse a reading committed by anyone other than the key holding the membership drawn for it. Whoever commits shows the memberships skipped before theirs, so the program can check each one was not active.
+
+### 4.4 Leaving
+
+A membership asks to leave, and stops being active at once. Its stake comes back after 45 days' notice. The notice is longer than the time it takes to find a false reading, so a member cannot read, lie and leave before it is found. A membership with an open challenge (section 5) cannot leave until it is settled.
+
+### 4.5 What membership does and does not prove
+
+- **A membership is a stake, not a person.** Two memberships can be one person, and nothing here can tell.
+- **The stake is the same for everyone.** A stake that deters has to grow with what a false reading would be worth, which is the traffic a service carries. That needs prices on chain (part 6).
+- **The opener still writes the list,** and chooses when to open it. The opener no longer chooses who reads.
+
+## 5. Challenges
+
+### 5.1 What a challenge asks
+
+Anyone may challenge a revealed reading taken by a member, once, for a bond of 0.1 SOL. The challenge asks the member to show what they recorded:
+
+- the nonce
+- the reply, in full, at most 10,240 bytes
+
+They have 216,000 slots, about a day, to put both on chain.
+
+### 5.2 The answer
+
+The answer holds if:
+
+- the nonce's record names this reading (2.5)
+- `sha256(reply)` is the reply hash the reading recorded
+- the verdict rule (2.4) on the reply, for this nonce, gives the verdict the reading recorded
+
+If it holds, the challenger's bond goes to the member, who paid to publish. The reply is now public, which is what makes the next section possible.
+
+### 5.3 A challenge upheld
+
+If no answer holds by the deadline, anyone may uphold the challenge. Then:
+
+- the membership loses its whole stake and stops being active
+- the reading no longer counts
+- the challenger gets the bond back, and a tenth of the stake
+- the rest of the stake is held to pay back buyers of purchases made on false readings
+
+If the stake has already come back to the member, the reading still stops counting.
+
+> **Temporary.** Until chargebacks are on chain (part 7), the held stake cannot leave. Where it goes is decided there.
+
+### 5.4 What a challenge does and does not prove
+
+- **It catches a member who cannot back their own record.** A verdict that does not follow from the reply, a reply hash that was never a reply, a reply that was not kept.
+- **It does not catch a reply made up well.** A member knows the nonce, so they can write a reply that passes, and it will. 2.6 still holds. What catches that is a buyer's chargeback, which replays the purchase (part 7), and later a web proof of the reply.
+- **A service that stopped working is not a false reading.** Nothing in this section looks at the service again. A `false_or_decayed` pair (3.3) is never, by itself, grounds to take a stake.
+
+### 5.5 Checking a challenge
+
+| Check | If it fails |
+|---|---|
+| the reading was revealed, and taken by a member | there is nothing to challenge |
+| the answer's nonce record names the reading | the nonce is someone else's |
+| `sha256(reply)` equals the recorded reply hash | the reply shown is not the one recorded |
+| the verdict rule on the reply gives the recorded verdict | the verdict was misreported |
+| an upheld challenge had no answer that held before its deadline | the stake was taken from a member who had answered |
+
+## 6. What this version does not specify
 
 - **What goes into a round's list.** Which services are open for testing at a time, and how demand puts them there, comes with the parts that bring members and questions on chain.
 - **Who opens rounds and how often.** For now anyone may open one, for a bond, and it proves nothing except that its draw was fair.
@@ -305,7 +404,7 @@ It counts only if:
 
 ## Test values
 
-[`vectors/draw.json`](vectors/draw.json), [`vectors/question.json`](vectors/question.json) and [`vectors/pair.json`](vectors/pair.json) hold inputs, the results every implementation must produce, and what every implementation must refuse:
+[`vectors/draw.json`](vectors/draw.json), [`vectors/question.json`](vectors/question.json), [`vectors/pair.json`](vectors/pair.json) and [`vectors/reader.json`](vectors/reader.json) hold inputs, the results every implementation must produce, and what every implementation must refuse:
 
 ```bash
 python reference/check.py
