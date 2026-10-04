@@ -90,6 +90,8 @@ for o in PV["outcomes"]:
 for c in PV["counting"]:
     args = {k: c[k] for k in ("first_reader", "second_reader", "first_revealed_slot", "round_committed_slot", "same_service", "same_round", "first_is_latest")}
     check(f"second reading {'counts' if c['counts'] else 'does not count'}: {c['name']}", pr.counts(**args) == c["counts"])
+for c in PV["latest"]:
+    check(f"latest reading: {c['name']}", pr.latest(c["readings"], c["round_committed_slot"]) == c["latest"])
 
 print()
 print(f"{failures} failed" if failures else "all vectors match")

@@ -257,12 +257,14 @@ A round can draw every reading and re-read none of them. Reporting the first as 
 
 ### 3.2 A second reading
 
-A second reading is an ordinary reading (section 2) taken in a re-read round, which names, when it is committed, the first reading it re-tests. The first reading is not the second reader's to choose: it is the **latest** reading of that service revealed before the re-read round was committed. A reader who could name any earlier reading could pick the one whose verdict they want to contradict.
+A second reading is an ordinary reading (section 2) taken in a re-read round, which names, when it is committed, the first reading it re-tests. The first reading is not the second reader's to choose: it is the **latest** reading of that service that counts (2.7) and was revealed before the re-read round was committed. A reader who could name any earlier reading could pick the one whose verdict they want to contradict.
+
+Latest means revealed in the latest slot. Between readings revealed in the same slot, it is the one committed earliest, and then the one whose identifier is smallest, compared as bytes.
 
 It counts only if:
 
 - it is of the same service, byte for byte
-- the first reading is the latest one of that service revealed before the re-read round was committed
+- the first reading is the latest one of that service, as above
 - the two were taken in different rounds
 - the second reader is not the first reader. Someone checking their own reading checks nothing
 
@@ -282,6 +284,7 @@ It counts only if:
 
 - **A different key is not a different person.** Until members stake on what they read, one person can read with two keys. Part 5 is what makes the second reader someone with something to lose.
 - **Both readings are still their readers' word**, as 2.6 says of every reading.
+- **Which reading is re-read is fixed, but not when.** Whoever opens a re-read round picks the moment, and so which reading is the latest at that moment. Anyone, the service included, can also take a reading of a service just before a re-read round opens, and make theirs the one that gets re-read. Until members are drawn to readings, as part 5 does, the timing is the opener's.
 
 ### 3.5 Checking a pair
 
@@ -290,7 +293,7 @@ It counts only if:
 | both readings pass 2.7 | one of them does not count, and neither does the pair |
 | the services are the same bytes | it is a reading of something else |
 | the first was revealed before the re-read round was committed | which reading is the latest was not settled when the list was committed |
-| no other reading of the service was revealed after the first and before the re-read round was committed | the second reader chose which reading to contradict |
+| no other reading of the service that counts comes after the first, as 3.2 orders them, and was revealed before the re-read round was committed | the second reader chose which reading to contradict |
 | the readers differ | it is a reading checking itself |
 | the recorded outcome follows 3.3 from the two verdicts | the outcome was misreported |
 

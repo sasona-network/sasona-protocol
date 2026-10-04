@@ -152,5 +152,134 @@
    "first_is_latest": true,
    "counts": false
   }
+ ],
+ "latest": [
+  {
+   "name": "the one revealed last",
+   "readings": [
+    {
+     "id": "aa",
+     "revealed_slot": 100,
+     "committed_slot": 90,
+     "counts": true
+    },
+    {
+     "id": "bb",
+     "revealed_slot": 150,
+     "committed_slot": 140,
+     "counts": true
+    }
+   ],
+   "round_committed_slot": 200,
+   "latest": "bb"
+  },
+  {
+   "name": "revealed after the round was committed does not count",
+   "readings": [
+    {
+     "id": "aa",
+     "revealed_slot": 100,
+     "committed_slot": 90,
+     "counts": true
+    },
+    {
+     "id": "bb",
+     "revealed_slot": 200,
+     "committed_slot": 140,
+     "counts": true
+    }
+   ],
+   "round_committed_slot": 200,
+   "latest": "aa"
+  },
+  {
+   "name": "a reading that does not count is passed over",
+   "readings": [
+    {
+     "id": "aa",
+     "revealed_slot": 100,
+     "committed_slot": 90,
+     "counts": true
+    },
+    {
+     "id": "bb",
+     "revealed_slot": 150,
+     "committed_slot": 140,
+     "counts": false
+    }
+   ],
+   "round_committed_slot": 200,
+   "latest": "aa"
+  },
+  {
+   "name": "same slot: the one committed earliest",
+   "readings": [
+    {
+     "id": "aa",
+     "revealed_slot": 150,
+     "committed_slot": 120,
+     "counts": true
+    },
+    {
+     "id": "bb",
+     "revealed_slot": 150,
+     "committed_slot": 110,
+     "counts": true
+    }
+   ],
+   "round_committed_slot": 200,
+   "latest": "bb"
+  },
+  {
+   "name": "same slot and commit: the smaller identifier",
+   "readings": [
+    {
+     "id": "bb",
+     "revealed_slot": 150,
+     "committed_slot": 110,
+     "counts": true
+    },
+    {
+     "id": "aa",
+     "revealed_slot": 150,
+     "committed_slot": 110,
+     "counts": true
+    }
+   ],
+   "round_committed_slot": 200,
+   "latest": "aa"
+  },
+  {
+   "name": "identifiers compare as bytes",
+   "readings": [
+    {
+     "id": "0f",
+     "revealed_slot": 150,
+     "committed_slot": 110,
+     "counts": true
+    },
+    {
+     "id": "f0",
+     "revealed_slot": 150,
+     "committed_slot": 110,
+     "counts": true
+    }
+   ],
+   "round_committed_slot": 200,
+   "latest": "0f"
+  },
+  {
+   "name": "none before the round",
+   "readings": [
+    {
+     "id": "aa",
+     "revealed_slot": 300,
+     "committed_slot": 90,
+     "counts": true
+    }
+   ],
+   "round_committed_slot": 200,
+   "latest": null
+  }
  ]
 }

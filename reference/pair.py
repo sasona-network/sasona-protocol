@@ -16,6 +16,17 @@ def outcome(first: int, second: int) -> int:
     return AGREED_FAILS
 
 
+def latest(readings: list, round_committed_slot: int):
+    """SPEC.md 3.2: the reading a re-read round re-tests, or None.
+
+    Each reading is a dict with "id" (hex), "revealed_slot", "committed_slot"
+    and "counts" (whether it passes 2.7)."""
+    eligible = [r for r in readings if r["counts"] and r["revealed_slot"] < round_committed_slot]
+    if not eligible:
+        return None
+    return min(eligible, key=lambda r: (-r["revealed_slot"], r["committed_slot"], bytes.fromhex(r["id"])))["id"]
+
+
 def counts(first_reader: str, second_reader: str, first_revealed_slot: int, round_committed_slot: int,
            same_service: bool, same_round: bool, first_is_latest: bool) -> bool:
     """SPEC.md 3.2: whether a second reading counts as one."""

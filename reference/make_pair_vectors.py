@@ -30,7 +30,20 @@ def main():
     for c in counting:
         args = {k: c[k] for k in base}
         assert p.counts(**args) == c["counts"], c["name"]
-    out = {"version": "0.4.0", "outcomes": outcomes, "counting": counting}
+    def r(i, revealed, committed, ok=True):
+        return {"id": i, "revealed_slot": revealed, "committed_slot": committed, "counts": ok}
+    latest_cases = [
+        ("the one revealed last", [r("aa", 100, 90), r("bb", 150, 140)], 200),
+        ("revealed after the round was committed does not count", [r("aa", 100, 90), r("bb", 200, 140)], 200),
+        ("a reading that does not count is passed over", [r("aa", 100, 90), r("bb", 150, 140, False)], 200),
+        ("same slot: the one committed earliest", [r("aa", 150, 120), r("bb", 150, 110)], 200),
+        ("same slot and commit: the smaller identifier", [r("bb", 150, 110), r("aa", 150, 110)], 200),
+        ("identifiers compare as bytes", [r("0f", 150, 110), r("f0", 150, 110)], 200),
+        ("none before the round", [r("aa", 300, 90)], 200),
+    ]
+    latest = [{"name": n, "readings": rs, "round_committed_slot": slot, "latest": p.latest(rs, slot)}
+              for n, rs, slot in latest_cases]
+    out = {"version": "0.4.0", "outcomes": outcomes, "counting": counting, "latest": latest}
     path = Path(__file__).parent.parent / "vectors" / "pair.json"
     path.write_text(json.dumps(out, indent=1) + "\n", encoding="ascii", newline="\n")
     print(f"wrote {path}")

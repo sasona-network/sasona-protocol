@@ -24,6 +24,22 @@ fn every_pair() {
         );
         assert_eq!(got, c["counts"].as_bool().unwrap(), "{}", c["name"]);
     }
+    for c in v["latest"].as_array().unwrap() {
+        let readings: Vec<Candidate> = c["readings"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|r| Candidate {
+                id: hex::decode(r["id"].as_str().unwrap()).unwrap(),
+                revealed_slot: r["revealed_slot"].as_u64().unwrap(),
+                committed_slot: r["committed_slot"].as_u64().unwrap(),
+                counts: r["counts"].as_bool().unwrap(),
+            })
+            .collect();
+        let want = c["latest"].as_str().map(|s| hex::decode(s).unwrap());
+        let got = latest(&readings, c["round_committed_slot"].as_u64().unwrap()).map(|b| b.to_vec());
+        assert_eq!(got, want, "{}", c["name"]);
+    }
     assert_eq!(outcome(0, 1), None);
     assert_eq!(outcome(1, 4), None);
 }
