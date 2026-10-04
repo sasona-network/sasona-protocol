@@ -1,197 +1,429 @@
 {
  "version": "0.6.0",
  "term_seconds": 2592000,
- "standing": [
+ "premiums": [
   {
    "name": "a standing quote",
-   "quote": {
-    "reading": "aa",
-    "rate": 120,
-    "counts": true,
-    "verdict": 1,
-    "by_reader": true,
-    "by_member": true,
-    "revealed_time": 8553600,
-    "member_active": true
-   },
-   "at": 8640000,
-   "stands": true
+   "now": 8640000,
+   "readings": [
+    {
+     "id": "aa",
+     "revealed_slot": 1000000,
+     "committed_slot": 999990,
+     "revealed_time": 8553600,
+     "counts": true,
+     "verdict": 1,
+     "member_active": true,
+     "quote": 120,
+     "quote_by_reader": true
+    }
+   ],
+   "premium": 120
+  },
+  {
+   "name": "the lowest rate, 1",
+   "now": 8640000,
+   "readings": [
+    {
+     "id": "aa",
+     "revealed_slot": 1000000,
+     "committed_slot": 999990,
+     "revealed_time": 8553600,
+     "counts": true,
+     "verdict": 1,
+     "member_active": true,
+     "quote": 1,
+     "quote_by_reader": true
+    }
+   ],
+   "premium": 1
+  },
+  {
+   "name": "the highest rate, 10,000",
+   "now": 8640000,
+   "readings": [
+    {
+     "id": "aa",
+     "revealed_slot": 1000000,
+     "committed_slot": 999990,
+     "revealed_time": 8553600,
+     "counts": true,
+     "verdict": 1,
+     "member_active": true,
+     "quote": 10000,
+     "quote_by_reader": true
+    }
+   ],
+   "premium": 10000
   },
   {
    "name": "withdrawn",
-   "quote": {
-    "reading": "aa",
-    "rate": 0,
-    "counts": true,
-    "verdict": 1,
-    "by_reader": true,
-    "by_member": true,
-    "revealed_time": 8553600,
-    "member_active": true
-   },
-   "at": 8640000,
-   "stands": false
+   "now": 8640000,
+   "readings": [
+    {
+     "id": "aa",
+     "revealed_slot": 1000000,
+     "committed_slot": 999990,
+     "revealed_time": 8553600,
+     "counts": true,
+     "verdict": 1,
+     "member_active": true,
+     "quote": 0,
+     "quote_by_reader": true
+    }
+   ],
+   "premium": null
   },
   {
-   "name": "a rate above 10,000",
-   "quote": {
-    "reading": "aa",
-    "rate": 10001,
-    "counts": true,
-    "verdict": 1,
-    "by_reader": true,
-    "by_member": true,
-    "revealed_time": 8553600,
-    "member_active": true
-   },
-   "at": 8640000,
-   "stands": false
-  },
-  {
-   "name": "a reading upheld false",
-   "quote": {
-    "reading": "aa",
-    "rate": 120,
-    "counts": false,
-    "verdict": 1,
-    "by_reader": true,
-    "by_member": true,
-    "revealed_time": 8553600,
-    "member_active": true
-   },
-   "at": 8640000,
-   "stands": false
-  },
-  {
-   "name": "a reading that did not deliver",
-   "quote": {
-    "reading": "aa",
-    "rate": 120,
-    "counts": true,
-    "verdict": 2,
-    "by_reader": true,
-    "by_member": true,
-    "revealed_time": 8553600,
-    "member_active": true
-   },
-   "at": 8640000,
-   "stands": false
+   "name": "above 10,000",
+   "now": 8640000,
+   "readings": [
+    {
+     "id": "aa",
+     "revealed_slot": 1000000,
+     "committed_slot": 999990,
+     "revealed_time": 8553600,
+     "counts": true,
+     "verdict": 1,
+     "member_active": true,
+     "quote": 10001,
+     "quote_by_reader": true
+    }
+   ],
+   "premium": null
   },
   {
    "name": "set by someone other than the reader",
-   "quote": {
-    "reading": "aa",
-    "rate": 120,
-    "counts": true,
-    "verdict": 1,
-    "by_reader": false,
-    "by_member": true,
-    "revealed_time": 8553600,
-    "member_active": true
-   },
-   "at": 8640000,
-   "stands": false
-  },
-  {
-   "name": "on a reading taken before members",
-   "quote": {
-    "reading": "aa",
-    "rate": 120,
-    "counts": true,
-    "verdict": 1,
-    "by_reader": true,
-    "by_member": false,
-    "revealed_time": 8553600,
-    "member_active": true
-   },
-   "at": 8640000,
-   "stands": false
+   "now": 8640000,
+   "readings": [
+    {
+     "id": "aa",
+     "revealed_slot": 1000000,
+     "committed_slot": 999990,
+     "revealed_time": 8553600,
+     "counts": true,
+     "verdict": 1,
+     "member_active": true,
+     "quote": 120,
+     "quote_by_reader": false
+    }
+   ],
+   "premium": null
   },
   {
    "name": "the member asked to leave",
-   "quote": {
-    "reading": "aa",
-    "rate": 120,
-    "counts": true,
-    "verdict": 1,
-    "by_reader": true,
-    "by_member": true,
-    "revealed_time": 8553600,
-    "member_active": false
-   },
-   "at": 8640000,
-   "stands": false
+   "now": 8640000,
+   "readings": [
+    {
+     "id": "aa",
+     "revealed_slot": 1000000,
+     "committed_slot": 999990,
+     "revealed_time": 8553600,
+     "counts": true,
+     "verdict": 1,
+     "member_active": false,
+     "quote": 120,
+     "quote_by_reader": true
+    }
+   ],
+   "premium": null
+  },
+  {
+   "name": "the current reading says wrong answer",
+   "now": 8640000,
+   "readings": [
+    {
+     "id": "aa",
+     "revealed_slot": 1000000,
+     "committed_slot": 999990,
+     "revealed_time": 8553600,
+     "counts": true,
+     "verdict": 2,
+     "member_active": true,
+     "quote": 120,
+     "quote_by_reader": true
+    }
+   ],
+   "premium": null
+  },
+  {
+   "name": "the current reading says empty",
+   "now": 8640000,
+   "readings": [
+    {
+     "id": "aa",
+     "revealed_slot": 1000000,
+     "committed_slot": 999990,
+     "revealed_time": 8553600,
+     "counts": true,
+     "verdict": 3,
+     "member_active": true,
+     "quote": 120,
+     "quote_by_reader": true
+    }
+   ],
+   "premium": null
   },
   {
    "name": "revealed exactly 30 days ago",
-   "quote": {
-    "reading": "aa",
-    "rate": 120,
-    "counts": true,
-    "verdict": 1,
-    "by_reader": true,
-    "by_member": true,
-    "revealed_time": 6048000,
-    "member_active": true
-   },
-   "at": 8640000,
-   "stands": true
+   "now": 8640000,
+   "readings": [
+    {
+     "id": "aa",
+     "revealed_slot": 1000000,
+     "committed_slot": 999990,
+     "revealed_time": 6048000,
+     "counts": true,
+     "verdict": 1,
+     "member_active": true,
+     "quote": 120,
+     "quote_by_reader": true
+    }
+   ],
+   "premium": 120
   },
   {
    "name": "revealed 30 days and a second ago",
-   "quote": {
-    "reading": "aa",
-    "rate": 120,
-    "counts": true,
-    "verdict": 1,
-    "by_reader": true,
-    "by_member": true,
-    "revealed_time": 6047999,
-    "member_active": true
-   },
-   "at": 8640000,
-   "stands": false
+   "now": 8640000,
+   "readings": [
+    {
+     "id": "aa",
+     "revealed_slot": 1000000,
+     "committed_slot": 999990,
+     "revealed_time": 6047999,
+     "counts": true,
+     "verdict": 1,
+     "member_active": true,
+     "quote": 120,
+     "quote_by_reader": true
+    }
+   ],
+   "premium": null
+  },
+  {
+   "name": "revealed after the moment asked about",
+   "now": 8640000,
+   "readings": [
+    {
+     "id": "aa",
+     "revealed_slot": 1000000,
+     "committed_slot": 999990,
+     "revealed_time": 8640001,
+     "counts": true,
+     "verdict": 1,
+     "member_active": true,
+     "quote": 120,
+     "quote_by_reader": true
+    }
+   ],
+   "premium": null
+  },
+  {
+   "name": "no reading counts",
+   "now": 8640000,
+   "readings": [
+    {
+     "id": "aa",
+     "revealed_slot": 1000000,
+     "committed_slot": 999990,
+     "revealed_time": 8553600,
+     "counts": false,
+     "verdict": 1,
+     "member_active": true,
+     "quote": 120,
+     "quote_by_reader": true
+    }
+   ],
+   "premium": null
+  },
+  {
+   "name": "a newer reading that failed replaces a cheap old one",
+   "now": 8640000,
+   "readings": [
+    {
+     "id": "aa",
+     "revealed_slot": 1000000,
+     "committed_slot": 999990,
+     "revealed_time": 7776000,
+     "counts": true,
+     "verdict": 1,
+     "member_active": true,
+     "quote": 5,
+     "quote_by_reader": true
+    },
+    {
+     "id": "bb",
+     "revealed_slot": 1000500,
+     "committed_slot": 1000490,
+     "revealed_time": 8467200,
+     "counts": true,
+     "verdict": 2,
+     "member_active": true,
+     "quote": 0,
+     "quote_by_reader": true
+    }
+   ],
+   "premium": null
+  },
+  {
+   "name": "a newer reading's own quote is the one that counts",
+   "now": 8640000,
+   "readings": [
+    {
+     "id": "aa",
+     "revealed_slot": 1000000,
+     "committed_slot": 999990,
+     "revealed_time": 7776000,
+     "counts": true,
+     "verdict": 1,
+     "member_active": true,
+     "quote": 5,
+     "quote_by_reader": true
+    },
+    {
+     "id": "bb",
+     "revealed_slot": 1000500,
+     "committed_slot": 1000490,
+     "revealed_time": 8467200,
+     "counts": true,
+     "verdict": 1,
+     "member_active": true,
+     "quote": 400,
+     "quote_by_reader": true
+    }
+   ],
+   "premium": 400
+  },
+  {
+   "name": "a newer reading upheld false does not replace the old one",
+   "now": 8640000,
+   "readings": [
+    {
+     "id": "aa",
+     "revealed_slot": 1000000,
+     "committed_slot": 999990,
+     "revealed_time": 7776000,
+     "counts": true,
+     "verdict": 1,
+     "member_active": true,
+     "quote": 50,
+     "quote_by_reader": true
+    },
+    {
+     "id": "bb",
+     "revealed_slot": 1000500,
+     "committed_slot": 1000490,
+     "revealed_time": 8467200,
+     "counts": false,
+     "verdict": 1,
+     "member_active": true,
+     "quote": 5,
+     "quote_by_reader": true
+    }
+   ],
+   "premium": 50
+  },
+  {
+   "name": "revealed in the same slot: the one committed earliest is current",
+   "now": 8640000,
+   "readings": [
+    {
+     "id": "aa",
+     "revealed_slot": 1000000,
+     "committed_slot": 999997,
+     "revealed_time": 8553600,
+     "counts": true,
+     "verdict": 1,
+     "member_active": true,
+     "quote": 50,
+     "quote_by_reader": true
+    },
+    {
+     "id": "bb",
+     "revealed_slot": 1000000,
+     "committed_slot": 999991,
+     "revealed_time": 8553600,
+     "counts": true,
+     "verdict": 1,
+     "member_active": true,
+     "quote": 70,
+     "quote_by_reader": true
+    }
+   ],
+   "premium": 70
+  },
+  {
+   "name": "same slot and commit: the smaller identifier is current",
+   "now": 8640000,
+   "readings": [
+    {
+     "id": "bb",
+     "revealed_slot": 1000000,
+     "committed_slot": 999990,
+     "revealed_time": 8553600,
+     "counts": true,
+     "verdict": 1,
+     "member_active": true,
+     "quote": 50,
+     "quote_by_reader": true
+    },
+    {
+     "id": "aa",
+     "revealed_slot": 1000000,
+     "committed_slot": 999990,
+     "revealed_time": 8553600,
+     "counts": true,
+     "verdict": 1,
+     "member_active": true,
+     "quote": 70,
+     "quote_by_reader": true
+    }
+   ],
+   "premium": 70
   }
  ],
  "rankings": [
   {
    "name": "cheapest first",
-   "at": 8640000,
+   "now": 8640000,
    "services": {
     "https://a.example/x": [
      {
-      "reading": "01",
-      "rate": 300,
+      "id": "01",
+      "revealed_slot": 1000000,
+      "committed_slot": 999990,
+      "revealed_time": 8553600,
       "counts": true,
       "verdict": 1,
-      "by_reader": true,
-      "by_member": true,
-      "revealed_time": 8553600,
-      "member_active": true
+      "member_active": true,
+      "quote": 300,
+      "quote_by_reader": true
      }
     ],
     "https://b.example/x": [
      {
-      "reading": "02",
-      "rate": 100,
+      "id": "02",
+      "revealed_slot": 1000000,
+      "committed_slot": 999990,
+      "revealed_time": 8553600,
       "counts": true,
       "verdict": 1,
-      "by_reader": true,
-      "by_member": true,
-      "revealed_time": 8553600,
-      "member_active": true
+      "member_active": true,
+      "quote": 100,
+      "quote_by_reader": true
      }
     ],
     "https://c.example/x": [
      {
-      "reading": "03",
-      "rate": 200,
+      "id": "03",
+      "revealed_slot": 1000000,
+      "committed_slot": 999990,
+      "revealed_time": 8553600,
       "counts": true,
       "verdict": 1,
-      "by_reader": true,
-      "by_member": true,
-      "revealed_time": 8553600,
-      "member_active": true
+      "member_active": true,
+      "quote": 200,
+      "quote_by_reader": true
      }
     ]
    },
@@ -211,128 +443,82 @@
    ]
   },
   {
-   "name": "a service's premium is its lowest standing quote",
-   "at": 8640000,
+   "name": "a service whose current reading failed is not listed",
+   "now": 8640000,
    "services": {
     "https://a.example/x": [
      {
-      "reading": "01",
-      "rate": 300,
+      "id": "01",
+      "revealed_slot": 1000000,
+      "committed_slot": 999990,
+      "revealed_time": 7862400,
       "counts": true,
       "verdict": 1,
-      "by_reader": true,
-      "by_member": true,
-      "revealed_time": 8553600,
-      "member_active": true
+      "member_active": true,
+      "quote": 50,
+      "quote_by_reader": true
      },
      {
-      "reading": "04",
-      "rate": 90,
+      "id": "04",
+      "revealed_slot": 1000009,
+      "committed_slot": 999999,
+      "revealed_time": 8553600,
       "counts": true,
-      "verdict": 1,
-      "by_reader": true,
-      "by_member": true,
-      "revealed_time": 8553600,
-      "member_active": true
-     },
-     {
-      "reading": "05",
-      "rate": 50,
-      "counts": false,
-      "verdict": 1,
-      "by_reader": true,
-      "by_member": true,
-      "revealed_time": 8553600,
-      "member_active": true
+      "verdict": 2,
+      "member_active": true,
+      "quote": 0,
+      "quote_by_reader": true
      }
     ],
     "https://b.example/x": [
      {
-      "reading": "02",
-      "rate": 100,
+      "id": "02",
+      "revealed_slot": 1000000,
+      "committed_slot": 999990,
+      "revealed_time": 8553600,
       "counts": true,
       "verdict": 1,
-      "by_reader": true,
-      "by_member": true,
-      "revealed_time": 8553600,
-      "member_active": true
+      "member_active": true,
+      "quote": 100,
+      "quote_by_reader": true
      }
     ]
    },
    "ranking": [
-    [
-     "https://a.example/x",
-     90
-    ],
     [
      "https://b.example/x",
      100
-    ]
-   ]
-  },
-  {
-   "name": "a service with no standing quote is not listed",
-   "at": 8640000,
-   "services": {
-    "https://a.example/x": [
-     {
-      "reading": "01",
-      "rate": 300,
-      "counts": true,
-      "verdict": 1,
-      "by_reader": true,
-      "by_member": true,
-      "revealed_time": 8553600,
-      "member_active": false
-     }
-    ],
-    "https://b.example/x": [],
-    "https://c.example/x": [
-     {
-      "reading": "03",
-      "rate": 200,
-      "counts": true,
-      "verdict": 1,
-      "by_reader": true,
-      "by_member": true,
-      "revealed_time": 8553600,
-      "member_active": true
-     }
-    ]
-   },
-   "ranking": [
-    [
-     "https://c.example/x",
-     200
     ]
    ]
   },
   {
    "name": "the same premium: the fresher reading first",
-   "at": 8640000,
+   "now": 8640000,
    "services": {
     "https://a.example/x": [
      {
-      "reading": "01",
-      "rate": 100,
+      "id": "01",
+      "revealed_slot": 1000000,
+      "committed_slot": 999990,
+      "revealed_time": 8553600,
       "counts": true,
       "verdict": 1,
-      "by_reader": true,
-      "by_member": true,
-      "revealed_time": 8208000,
-      "member_active": true
+      "member_active": true,
+      "quote": 100,
+      "quote_by_reader": true
      }
     ],
     "https://b.example/x": [
      {
-      "reading": "02",
-      "rate": 100,
+      "id": "02",
+      "revealed_slot": 1000001,
+      "committed_slot": 999991,
+      "revealed_time": 8553600,
       "counts": true,
       "verdict": 1,
-      "by_reader": true,
-      "by_member": true,
-      "revealed_time": 8467200,
-      "member_active": true
+      "member_active": true,
+      "quote": 100,
+      "quote_by_reader": true
      }
     ]
    },
@@ -348,31 +534,33 @@
    ]
   },
   {
-   "name": "the same premium and reveal: the smaller reading first",
-   "at": 8640000,
+   "name": "the same premium and slot: the smaller reading first",
+   "now": 8640000,
    "services": {
     "https://a.example/x": [
      {
-      "reading": "f0",
-      "rate": 100,
+      "id": "f0",
+      "revealed_slot": 1000000,
+      "committed_slot": 999990,
+      "revealed_time": 8553600,
       "counts": true,
       "verdict": 1,
-      "by_reader": true,
-      "by_member": true,
-      "revealed_time": 8553600,
-      "member_active": true
+      "member_active": true,
+      "quote": 100,
+      "quote_by_reader": true
      }
     ],
     "https://b.example/x": [
      {
-      "reading": "0f",
-      "rate": 100,
+      "id": "0f",
+      "revealed_slot": 1000000,
+      "committed_slot": 999990,
+      "revealed_time": 8553600,
       "counts": true,
       "verdict": 1,
-      "by_reader": true,
-      "by_member": true,
-      "revealed_time": 8553600,
-      "member_active": true
+      "member_active": true,
+      "quote": 100,
+      "quote_by_reader": true
      }
     ]
    },
@@ -388,19 +576,20 @@
    ]
   },
   {
-   "name": "nothing stands",
-   "at": 8640000,
+   "name": "nothing listed",
+   "now": 8640000,
    "services": {
     "https://a.example/x": [
      {
-      "reading": "01",
-      "rate": 0,
+      "id": "01",
+      "revealed_slot": 1000000,
+      "committed_slot": 999990,
+      "revealed_time": 8553600,
       "counts": true,
       "verdict": 1,
-      "by_reader": true,
-      "by_member": true,
-      "revealed_time": 8553600,
-      "member_active": true
+      "member_active": true,
+      "quote": 0,
+      "quote_by_reader": true
      }
     ]
    },

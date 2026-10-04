@@ -4,27 +4,41 @@ TERM_SECONDS = 30 * 24 * 60 * 60
 DELIVERED = 1
 
 
-def stands(q: dict, at: int) -> bool:
-    """SPEC.md 6.1 and 6.2: whether a quote stands at time `at`.
-
-    A quote is a dict: "reading" (hex identifier), "rate" (basis points, 0 if
-    withdrawn), "counts" (its reading passes 2.7 and was not upheld false),
-    "verdict", "by_reader" (set by the key that took the reading),
-    "by_member" (the reading was taken by a member), "revealed_time" and
-    "member_active" (its membership is active at `at`)."""
-    return (1 <= q["rate"] <= 10_000 and q["counts"] and q["verdict"] == DELIVERED and q["by_reader"]
-            and q["by_member"] and q["member_active"] and at <= q["revealed_time"] + TERM_SECONDS)
+def order(r: dict):
+    """SPEC.md 3.2's order, latest first: the smallest key is the latest."""
+    return (-r["revealed_slot"], r["committed_slot"], bytes.fromhex(r["id"]))
 
 
-def rank(services: dict, at: int) -> list:
+def current(readings: list):
+    """SPEC.md 6.2: the latest reading that counts, or None.
+
+    A reading is a dict: "id" (hex), "revealed_slot", "committed_slot",
+    "revealed_time", "counts" (passes 2.7 and was not upheld false),
+    "verdict", "member_active", and "quote": its rate, 0 if none or
+    withdrawn, with "quote_by_reader" saying the reader set it."""
+    counting = [r for r in readings if r["counts"]]
+    return min(counting, key=order) if counting else None
+
+
+def premium(readings: list, now: int):
+    """SPEC.md 6.3 step 1 and 2: the service's premium now, or None if it is not listed."""
+    r = current(readings)
+    if r is None or r["verdict"] != DELIVERED:
+        return None
+    if not (r["revealed_time"] <= now <= r["revealed_time"] + TERM_SECONDS):
+        return None
+    if not (1 <= r["quote"] <= 10_000 and r["quote_by_reader"] and r["member_active"]):
+        return None
+    return r["quote"]
+
+
+def rank(services: dict, now: int) -> list:
     """SPEC.md 6.3: [(service, premium)], in order. `services` maps each
-    service to the quotes on its readings."""
-    priced = []
-    for service, quotes in services.items():
-        standing = [q for q in quotes if stands(q, at)]
-        if not standing:
-            continue
-        best = min(standing, key=lambda q: (q["rate"], -q["revealed_time"], bytes.fromhex(q["reading"])))
-        priced.append((best["rate"], -best["revealed_time"], bytes.fromhex(best["reading"]), service))
-    priced.sort()
-    return [(service, rate) for rate, _, _, service in priced]
+    service to its readings."""
+    listed = []
+    for service, readings in services.items():
+        p = premium(readings, now)
+        if p is not None:
+            listed.append((p, order(current(readings)), service))
+    listed.sort()
+    return [(service, p) for p, _, service in listed]

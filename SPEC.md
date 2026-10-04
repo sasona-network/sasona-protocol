@@ -424,47 +424,43 @@ The member who read a service is the one who knows most about it right now. They
 
 ### 6.1 A quote
 
-A **quote** is a rate in basis points, from 1 to 10,000, of a purchase's price: what a buyer would pay to be covered if the purchase does not deliver. It is set on one reading, by the key that took it, and only if:
+A **quote** is a rate in basis points, from 1 to 10,000, of a purchase's price: what a buyer would pay to be covered if the purchase does not deliver. It is set on one reading, by the key that took it. The member can change the rate or withdraw it at any time.
 
-- the reading counts (2.7) and its verdict is `delivered`. A service that did not deliver is not insured, so it is not listed
-- the reading was taken by a member (section 4)
+The program refuses a rate unless the reading was revealed, says `delivered`, was taken by a member who is still active, and is no more than 30 days old. It cannot see the rest of 2.7, whether the service was one of its round's picks and whether the reading still holds its nonce, so whoever ranks checks those (6.5).
 
-The member can change the rate or withdraw it at any time. The program records each change with its slot and its time. A quote that rises is the member saying the service looks worse than it did.
+Each change is recorded on chain, with its slot and time, in the event the program emits. The quote's account holds only the latest rate.
 
-### 6.2 When a quote stands
+### 6.2 The current reading
 
-At a moment `T`, a quote **stands** if:
-
-- it has a rate, that is, it was not withdrawn
-- its reading still counts. One upheld false (5.3) no longer does
-- `T` is within 30 days of the reading's reveal, the term a reading is current for
-- its membership is active at `T`. A member who has asked to leave, or lost the stake, insures nothing new
+A service's **current reading**, at the moment the ranking is read, is its latest reading that counts (2.7), ordered as in 3.2: revealed in the latest slot, then committed earliest, then the smaller identifier. A newer reading replaces an older one whatever it says. If it says the service failed, the older quote stops counting the moment it is revealed, without anyone saying the older reading was false (3.3).
 
 ### 6.3 The ranking
 
-At a moment `T`, for a list of services:
+At the moment it is read:
 
-1. a service's **premium** is the lowest rate among the standing quotes on its readings. If several quotes share it, the one that counts is on the reading revealed latest, then the smaller reading identifier
-2. services with a premium are ranked from the lowest premium to the highest
-3. services with the same premium are ranked by the reading behind the lowest quote: revealed latest first, then the smaller reading identifier, compared as bytes
-4. services with no standing quote are not ranked
+1. a service is **listed** if its current reading says `delivered`, is no more than 30 days old, and carries a quote that stands: a rate from 1 to 10,000, set by the reading's member, whose membership is still active
+2. its **premium** is that rate
+3. listed services are ranked from the lowest premium to the highest
+4. services with the same premium are ranked by their current readings, as 6.2 orders them: the latest first
+5. services that are not listed are not ranked
 
-The fresher reading wins a tie because it says more about the service now.
+The ranking is of the moment it is read. The chain keeps each quote's latest rate, and a membership's and a reading's present state, so a ranking for a moment in the past is rebuilt from the program's events, not from accounts.
 
 ### 6.4 What a quote does and does not prove
 
-- **Until purchases are on chain, a quote costs nothing to give.** The ranking is what members say they would charge, not yet what they have to pay. Premiums are collected with purchases (part 8), and claims paid from stakes with chargebacks (part 7). That is what makes a low quote expensive to give falsely.
-- **A quote is one member's price, on one reading.** Several readings of the same service each carry their own. The ranking takes the lowest, so one member willing to insure cheaply is enough to rank a service high, and will be the one paying if they were wrong.
+- **Until purchases are on chain, a quote costs nothing to give.** The ranking is what members say they would charge, not yet what they have to pay. Premiums are collected with purchases (part 8), and claims paid from stakes with chargebacks (part 7). That is what makes a low quote expensive to give falsely. A member can also withdraw a quote and set it again when it suits them, and nothing here sees it.
+- **Being the reader is not expensive.** Anyone can open a round with a list of their choosing. A service's operator holding several memberships can open rounds that list only their own service until one of their memberships is drawn, then read it as delivered and quote it cheaply. What limits this is that any later reading that counts replaces theirs (6.2), and anyone can open a round to get one. Which services go into lists is not specified yet (section 7), and until it is, a ranking is only as good as the readings behind it.
 - **The stake does not grow with the quote.** Every membership has the same stake, whatever it insures. 4.5 says when that changes.
 
 ### 6.5 Checking a ranking
 
+Whoever ranks needs, besides the program's accounts: each round's published list, to check the service was one of its picks, and each reading's reveal, to find its nonce and check the nonce record.
+
 | Check | If it fails |
 |---|---|
-| each quote ranked is on a reading that counts and says `delivered` | a service that did not deliver was listed |
-| it was set by the key that took the reading | someone else priced a reading they did not take |
-| it stands at `T`, as 6.2 says | an old, withdrawn or abandoned price was used |
-| each service's premium is its lowest standing quote | a higher price was shown than a member offered |
+| each service's current reading is its latest reading that counts, as 6.2 orders them | an older, kinder reading was used |
+| that reading says `delivered`, is no more than 30 days old, and its member is active | a service that failed, or a stale price, was listed |
+| the quote was set by the key that took the reading | someone else priced a reading they did not take |
 | the order follows 6.3 | the services were reordered |
 
 ## 7. What this version does not specify
