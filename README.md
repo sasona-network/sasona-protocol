@@ -8,11 +8,13 @@ A member's software and ours have to reach the same answer from the same inputs:
 
 | Version | What it covers |
 |---|---|
-| [0.2.0](SPEC.md) | The draw: how a round's seed and its list of services decide which services get tested, so anyone can re-run it, and why a list can be drawn only once |
+| [0.4.0](SPEC.md) | Section 1, the draw: how a round's seed and its list of services decide which services get tested, so anyone can re-run it |
+| | Section 2, the question: how a member tests a drawn service so the test is fixed before the service replies, and the verdict can be checked afterwards |
+| | Section 3, second readings: which reading is tested again, by whom, and what the two together settle |
 
 ## Check an implementation
 
-[`vectors/draw.json`](vectors/draw.json) holds fixed inputs, the results every implementation must produce, and lists every implementation must refuse. Two implementations, in two languages, each written from the specification, match it:
+[`vectors/`](vectors/) holds fixed inputs, one file per section, with the results every implementation must produce and the inputs it must refuse. Two implementations, in two languages, each written from the specification, match it:
 
 ```bash
 python reference/check.py           # Python, standard library only
