@@ -1,8 +1,11 @@
-//! The Sasona draw, from SPEC.md section 1.
+//! Sasona protocol: the draw (SPEC.md section 1) here, and the committed
+//! question (section 2) in `question`.
 //!
 //! Written from the specification rather than translated from the Python
 //! reference. Both are ours; an implementation by somebody else is what
 //! would really test the specification.
+
+pub mod question;
 
 use hmac::{Hmac, Mac};
 use sha2::{Digest, Sha256};

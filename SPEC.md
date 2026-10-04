@@ -1,8 +1,8 @@
 # Sasona protocol
 
-**Version 0.2.0.** This version specifies one thing: the draw.
+**Version 0.3.0.** This version specifies the draw (section 1) and the committed question (section 2).
 
-0.2.0 adds that a list can be drawn once (1.3, 1.8) and states two limits more plainly (1.7). Every value 0.1.0 computes is unchanged, so its test values still hold.
+0.3.0 adds section 2. 0.2.0 added that a list can be drawn once (1.3, 1.8) and stated two limits more plainly (1.7). Every value 0.1.0 computes is unchanged.
 
 The words **MUST** and **MUST NOT** mark rules that change a result. An implementation that does otherwise computes different values from every other one and is not conformant.
 
@@ -142,14 +142,113 @@ The entropy is checked by the program that records it; a verifier checks that th
 
 ---
 
-## 2. What this version does not specify
+## 2. The committed question
+
+A member tests a drawn service by asking it something whose right answer only the member knows. The question is fixed on chain **before** the service is called, and revealed afterwards, so it cannot be reshaped to fit whatever came back. The verdict comes from a published rule that anyone holding the reply can run again.
+
+### 2.1 The challenge
+
+This version specifies one capability, `execute`: a service that runs code and returns what it printed. It is a closed loop: the member holds the answer before asking.
+
+- The **nonce** is 16 fresh random bytes, written as 32 lowercase hex characters. A nonce **MUST NOT** be used twice, and the program refuses one that has been revealed before.
+- The **expected answer** is the first 16 characters of the lowercase hex `sha256` of the nonce's 32 ASCII characters.
+- The **code** is exactly these two lines, joined by one newline `0x0A` and with no newline at the end, `<nonce>` replaced by the nonce:
+
+```
+import hashlib
+print(hashlib.sha256("<nonce>".encode()).hexdigest()[:16])
+```
+
+The expected answer is a hash of the nonce rather than the nonce itself, so a service that echoes the request back does not contain it.
+
+### 2.2 The question
+
+The question is a JSON object with exactly these seven keys:
+
+| Key | Value |
+|---|---|
+| `capability` | `"execute"` |
+| `nonce` | the nonce |
+| `expect` | the expected answer |
+| `tier` | `1` |
+| `code` | the code |
+| `command` | `["python", "-c", <code>]` |
+| `body` | `{"code": <code>, "language": "python"}` |
+
+The code is carried in all three shapes a service may accept, so the commitment covers whichever one is sent.
+
+**Only the code goes to the service**, in one of the shapes `code`, `command` or `body`. The question object itself **MUST NOT** be sent: it holds the expected answer, and a service that echoed it back would pass.
+
+### 2.3 The question's bytes and hash
+
+The question is hashed as exactly one sequence of bytes, its **canonical form**:
+
+- keys sorted by their bytes, ascending, at both levels: `body`, `capability`, `code`, `command`, `expect`, `nonce`, `tier`, and inside `body`, `code` then `language`
+- no whitespace: separators are exactly `,` and `:`
+- strings in double quotes. In the code, `"` is written as backslash and quote, and the newline as backslash and `n`. Nothing else in a question needs escaping, because every other character is printable ASCII
+- the tier written as the single digit `1`
+
+```
+question_hash = sha256( canonical form )
+```
+
+This is not a general JSON encoding. It is the one byte sequence 2.1 and 2.2 produce for a nonce, and an implementation can build it directly from the nonce. Any other bytes, even ones a JSON parser reads as the same object, are a different question.
+
+### 2.4 The reply and the verdict
+
+The reply is the bytes the service returned, exactly as received. Its **reply hash** is `sha256` of those bytes.
+
+| Verdict | Code | When |
+|---|---|---|
+| `delivered` | 1 | the expected answer for the reading's nonce, as 16 ASCII bytes, appears anywhere in the reply |
+| `wrong_answer` | 2 | the reply is not empty and does not contain them |
+| `empty` | 3 | the reply is empty |
+
+The rule works on bytes, not text: the reply need not be valid UTF-8, and the answer must appear in lowercase, unbroken.
+
+A service that returned no reply at all, because it could not be reached or refused payment, took no money and gave nothing to read. That is not a reading and is not recorded.
+
+### 2.5 What a reading records, and in what order
+
+1. The member commits the question hash on chain for one service of a drawn round.
+2. The member sends that service the code, and keeps the reply.
+3. The member reveals the nonce, the reply hash and the verdict.
+
+At the reveal, the program builds the canonical question from the nonce itself and **MUST** refuse the reveal unless its hash is the committed one, so only a fair question can ever be revealed.
+
+**A nonce belongs to the reading that committed to it earliest.** The service learns the nonce when it is called, which is after the honest reading was committed. It can copy the nonce into a reading of its own, and reveal that first, but it can never commit earlier. So when a reading reveals a nonce that another reading already holds, the program **MUST** hand the nonce to it if it was committed in a strictly earlier slot, and **MUST** refuse it otherwise. Without this, a failing service could make every reading of itself impossible to reveal, and the reader would look like the one who backed out.
+
+A reading not revealed within 9,000 slots, about an hour, can only be marked **lapsed**, and is recorded as such.
+
+### 2.6 What a reading does and does not prove
+
+- **The question was fixed first.** It was committed before the reveal, so it was not chosen to fit the reply, and it is the fair question for a nonce never used before.
+- **The record agrees with itself.** Anyone holding the reply can hash it, compare the hash, and run the verdict rule again. The reply is what the network sells, so only its hash goes on chain.
+- **The member's word is still the member's word.** The member alone holds the reply, and the service does not sign it. A dishonest member could write down any reply they liked, containing the answer or not, and everything above would still check out. What makes that costly is not this section: it is the second readings of part 4 and the stakes of part 5. A web proof of the reply, which would take the member out of it, is a later version.
+- **`delivered` means the answer came back, not how.** A service that recognises this program and computes the hash without running any code also passes. An `execute` reading checks the answer the code produces.
+- A reading does not prove when the service was called.
+- A member can still choose not to reveal a reading they dislike. It is then marked lapsed, in public.
+- A member working with a service could tell it a nonce in advance. Nothing here can see that.
+
+### 2.7 Checking a reading
+
+| Check | If it fails |
+|---|---|
+| the canonical question for the revealed nonce hashes to the committed hash | the question was changed after the commitment |
+| `sha256(reply)` equals the recorded reply hash | the reply shown is not the one that was read |
+| the verdict rule on the reply gives the recorded verdict | the verdict was misreported |
+| the nonce's record names this reading | the nonce was used by an earlier reading, and this one does not count |
+| the reading's service is, byte for byte, one of its round's published picks | the service was not drawn, or was spelt differently to be tested twice |
+
+## 3. What this version does not specify
 
 - **What goes into a round's list.** Which services are open for testing at a time, and how demand puts them there, comes with the parts that bring members and questions on chain.
 - **Who opens rounds and how often.** For now anyone may open one, for a bond, and it proves nothing except that its draw was fair.
+- **Capabilities other than `execute`**, and how two readings of one service are compared.
 
 ## Test values
 
-[`vectors/draw.json`](vectors/draw.json) holds inputs, the results every implementation must produce, and lists every implementation must refuse:
+[`vectors/draw.json`](vectors/draw.json) and [`vectors/question.json`](vectors/question.json) hold inputs, the results every implementation must produce, and what every implementation must refuse:
 
 ```bash
 python reference/check.py

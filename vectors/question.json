@@ -1,0 +1,165 @@
+{
+ "version": "0.3.0",
+ "questions": [
+  {
+   "nonce": "0123456789abcdef0123456789abcdef",
+   "expect": "3eb1bd439947eb76",
+   "code": "import hashlib\nprint(hashlib.sha256(\"0123456789abcdef0123456789abcdef\".encode()).hexdigest()[:16])",
+   "canonical": "{\"body\":{\"code\":\"import hashlib\\nprint(hashlib.sha256(\\\"0123456789abcdef0123456789abcdef\\\".encode()).hexdigest()[:16])\",\"language\":\"python\"},\"capability\":\"execute\",\"code\":\"import hashlib\\nprint(hashlib.sha256(\\\"0123456789abcdef0123456789abcdef\\\".encode()).hexdigest()[:16])\",\"command\":[\"python\",\"-c\",\"import hashlib\\nprint(hashlib.sha256(\\\"0123456789abcdef0123456789abcdef\\\".encode()).hexdigest()[:16])\"],\"expect\":\"3eb1bd439947eb76\",\"nonce\":\"0123456789abcdef0123456789abcdef\",\"tier\":1}",
+   "question_hash": "0a3c847b1edb39cd948bbc3d4d5629b62dc407e295d9c26235e715fd2077507c"
+  },
+  {
+   "nonce": "ffffffffffffffffffffffffffffffff",
+   "expect": "352302489bc2fcf0",
+   "code": "import hashlib\nprint(hashlib.sha256(\"ffffffffffffffffffffffffffffffff\".encode()).hexdigest()[:16])",
+   "canonical": "{\"body\":{\"code\":\"import hashlib\\nprint(hashlib.sha256(\\\"ffffffffffffffffffffffffffffffff\\\".encode()).hexdigest()[:16])\",\"language\":\"python\"},\"capability\":\"execute\",\"code\":\"import hashlib\\nprint(hashlib.sha256(\\\"ffffffffffffffffffffffffffffffff\\\".encode()).hexdigest()[:16])\",\"command\":[\"python\",\"-c\",\"import hashlib\\nprint(hashlib.sha256(\\\"ffffffffffffffffffffffffffffffff\\\".encode()).hexdigest()[:16])\"],\"expect\":\"352302489bc2fcf0\",\"nonce\":\"ffffffffffffffffffffffffffffffff\",\"tier\":1}",
+   "question_hash": "a4ec2e4c1abc7d36a394d105d0f6df50c06138b4f9861a4981bec8cda72f9449"
+  },
+  {
+   "nonce": "9a3e5c0d71b24f68aa0b1c2d3e4f5061",
+   "expect": "49178f44df3901c6",
+   "code": "import hashlib\nprint(hashlib.sha256(\"9a3e5c0d71b24f68aa0b1c2d3e4f5061\".encode()).hexdigest()[:16])",
+   "canonical": "{\"body\":{\"code\":\"import hashlib\\nprint(hashlib.sha256(\\\"9a3e5c0d71b24f68aa0b1c2d3e4f5061\\\".encode()).hexdigest()[:16])\",\"language\":\"python\"},\"capability\":\"execute\",\"code\":\"import hashlib\\nprint(hashlib.sha256(\\\"9a3e5c0d71b24f68aa0b1c2d3e4f5061\\\".encode()).hexdigest()[:16])\",\"command\":[\"python\",\"-c\",\"import hashlib\\nprint(hashlib.sha256(\\\"9a3e5c0d71b24f68aa0b1c2d3e4f5061\\\".encode()).hexdigest()[:16])\"],\"expect\":\"49178f44df3901c6\",\"nonce\":\"9a3e5c0d71b24f68aa0b1c2d3e4f5061\",\"tier\":1}",
+   "question_hash": "d7128e219c21fa19f335e690a70f062ede149a6f385a4ec554afffdc94952a9c"
+  }
+ ],
+ "bad_nonces": [
+  {
+   "why": "31 characters",
+   "nonce": "0123456789abcdef0123456789abcde"
+  },
+  {
+   "why": "33 characters",
+   "nonce": "0123456789abcdef0123456789abcdef0"
+  },
+  {
+   "why": "not hex",
+   "nonce": "0123456789abcdef0123456789abcdeg"
+  },
+  {
+   "why": "uppercase",
+   "nonce": "0123456789ABCDEF0123456789ABCDEF"
+  }
+ ],
+ "verdicts": {
+  "nonce": "0123456789abcdef0123456789abcdef",
+  "replies": [
+   {
+    "name": "the answer and nothing else",
+    "reply_hex": "336562316264343339393437656237360a",
+    "reply_hash": "035f872bb1fe5c02e261d377fd73bb218ab827ac20a99667d0fe6a0ab7daaf0d",
+    "verdict": 1,
+    "verdict_name": "delivered"
+   },
+   {
+    "name": "the answer inside JSON",
+    "reply_hex": "7b227374646f7574223a2022336562316264343339393437656237365c6e222c202265786974223a20307d",
+    "reply_hash": "4593fe0d3398d541fa33e4828e5acd30eb76781c21ad95c0c878a03b548f074d",
+    "verdict": 1,
+    "verdict_name": "delivered"
+   },
+   {
+    "name": "the answer between bytes that are not text",
+    "reply_hex": "ff0033656231626434333939343765623736fe",
+    "reply_hash": "fcf7f12babb7008f0ae9a94d8c0c8c3f2a7c44c93f3de7012e169438f01d1489",
+    "verdict": 1,
+    "verdict_name": "delivered"
+   },
+   {
+    "name": "the answer inside a longer run of hex",
+    "reply_hex": "3030336562316264343339393437656237366666",
+    "reply_hash": "6dc8ead146c3d1c76c50e6ed434cc0c380d0f34e29b2a3f079326963d60ea47e",
+    "verdict": 1,
+    "verdict_name": "delivered"
+   },
+   {
+    "name": "an echo of the code that was sent",
+    "reply_hex": "696d706f727420686173686c69620a7072696e7428686173686c69622e73686132353628223031323334353637383961626364656630313233343536373839616263646566222e656e636f64652829292e68657864696765737428295b3a31365d29",
+    "reply_hash": "7dc114bd3a891c7498544932b71f0c8fb275e0c6fbe73db7d035114c0bcdf088",
+    "verdict": 2,
+    "verdict_name": "wrong_answer"
+   },
+   {
+    "name": "an echo of the question, which must never be sent",
+    "reply_hex": "7b22626f6479223a7b22636f6465223a22696d706f727420686173686c69625c6e7072696e7428686173686c69622e736861323536285c2230313233343536373839616263646566303132333435363738396162636465665c222e656e636f64652829292e68657864696765737428295b3a31365d29222c226c616e6775616765223a22707974686f6e227d2c226361706162696c697479223a2265786563757465222c22636f6465223a22696d706f727420686173686c69625c6e7072696e7428686173686c69622e736861323536285c2230313233343536373839616263646566303132333435363738396162636465665c222e656e636f64652829292e68657864696765737428295b3a31365d29222c22636f6d6d616e64223a5b22707974686f6e222c222d63222c22696d706f727420686173686c69625c6e7072696e7428686173686c69622e736861323536285c2230313233343536373839616263646566303132333435363738396162636465665c222e656e636f64652829292e68657864696765737428295b3a31365d29225d2c22657870656374223a2233656231626434333939343765623736222c226e6f6e6365223a223031323334353637383961626364656630313233343536373839616263646566222c2274696572223a317d",
+    "reply_hash": "0a3c847b1edb39cd948bbc3d4d5629b62dc407e295d9c26235e715fd2077507c",
+    "verdict": 1,
+    "verdict_name": "delivered"
+   },
+   {
+    "name": "a canned reply",
+    "reply_hex": "7b22737461747573223a226f6b222c226f7574707574223a22646f6e65227d",
+    "reply_hash": "380dcee48aae66ee56809ae02ed2ad93aac2e3fd788e399ccec385fbde58434a",
+    "verdict": 2,
+    "verdict_name": "wrong_answer"
+   },
+   {
+    "name": "the answer in capitals",
+    "reply_hex": "33454231424434333939343745423736",
+    "reply_hash": "5aff10dc6928f0eab00f01efca6793188a94fad2c247f92de5e34792bc4ba1bc",
+    "verdict": 2,
+    "verdict_name": "wrong_answer"
+   },
+   {
+    "name": "the answer broken by a newline",
+    "reply_hex": "33656231626434330a3939343765623736",
+    "reply_hash": "1d1295f260fbe0c77f113d2aa0169e57edfb9390b5a39aa2a22b2d8075977f25",
+    "verdict": 2,
+    "verdict_name": "wrong_answer"
+   },
+   {
+    "name": "fifteen of the sixteen characters",
+    "reply_hex": "336562316264343339393437656237",
+    "reply_hash": "cab3c1c0f944340b65bc23093e876cccbc978cb6b35119d3da6ca94addc17496",
+    "verdict": 2,
+    "verdict_name": "wrong_answer"
+   },
+   {
+    "name": "nothing",
+    "reply_hex": "",
+    "reply_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "verdict": 3,
+    "verdict_name": "empty"
+   }
+  ]
+ },
+ "fair": "{\"body\":{\"code\":\"import hashlib\\nprint(hashlib.sha256(\\\"0123456789abcdef0123456789abcdef\\\".encode()).hexdigest()[:16])\",\"language\":\"python\"},\"capability\":\"execute\",\"code\":\"import hashlib\\nprint(hashlib.sha256(\\\"0123456789abcdef0123456789abcdef\\\".encode()).hexdigest()[:16])\",\"command\":[\"python\",\"-c\",\"import hashlib\\nprint(hashlib.sha256(\\\"0123456789abcdef0123456789abcdef\\\".encode()).hexdigest()[:16])\"],\"expect\":\"3eb1bd439947eb76\",\"nonce\":\"0123456789abcdef0123456789abcdef\",\"tier\":1}",
+ "unfair": [
+  {
+   "name": "a different expected answer",
+   "bytes": "{\"body\":{\"code\":\"import hashlib\\nprint(hashlib.sha256(\\\"0123456789abcdef0123456789abcdef\\\".encode()).hexdigest()[:16])\",\"language\":\"python\"},\"capability\":\"execute\",\"code\":\"import hashlib\\nprint(hashlib.sha256(\\\"0123456789abcdef0123456789abcdef\\\".encode()).hexdigest()[:16])\",\"command\":[\"python\",\"-c\",\"import hashlib\\nprint(hashlib.sha256(\\\"0123456789abcdef0123456789abcdef\\\".encode()).hexdigest()[:16])\"],\"expect\":\"0000000000000000\",\"nonce\":\"0123456789abcdef0123456789abcdef\",\"tier\":1}"
+  },
+  {
+   "name": "the tier as true",
+   "bytes": "{\"body\":{\"code\":\"import hashlib\\nprint(hashlib.sha256(\\\"0123456789abcdef0123456789abcdef\\\".encode()).hexdigest()[:16])\",\"language\":\"python\"},\"capability\":\"execute\",\"code\":\"import hashlib\\nprint(hashlib.sha256(\\\"0123456789abcdef0123456789abcdef\\\".encode()).hexdigest()[:16])\",\"command\":[\"python\",\"-c\",\"import hashlib\\nprint(hashlib.sha256(\\\"0123456789abcdef0123456789abcdef\\\".encode()).hexdigest()[:16])\"],\"expect\":\"3eb1bd439947eb76\",\"nonce\":\"0123456789abcdef0123456789abcdef\",\"tier\":true}"
+  },
+  {
+   "name": "the tier as 1.0",
+   "bytes": "{\"body\":{\"code\":\"import hashlib\\nprint(hashlib.sha256(\\\"0123456789abcdef0123456789abcdef\\\".encode()).hexdigest()[:16])\",\"language\":\"python\"},\"capability\":\"execute\",\"code\":\"import hashlib\\nprint(hashlib.sha256(\\\"0123456789abcdef0123456789abcdef\\\".encode()).hexdigest()[:16])\",\"command\":[\"python\",\"-c\",\"import hashlib\\nprint(hashlib.sha256(\\\"0123456789abcdef0123456789abcdef\\\".encode()).hexdigest()[:16])\"],\"expect\":\"3eb1bd439947eb76\",\"nonce\":\"0123456789abcdef0123456789abcdef\",\"tier\":1.0}"
+  },
+  {
+   "name": "the tier as a string",
+   "bytes": "{\"body\":{\"code\":\"import hashlib\\nprint(hashlib.sha256(\\\"0123456789abcdef0123456789abcdef\\\".encode()).hexdigest()[:16])\",\"language\":\"python\"},\"capability\":\"execute\",\"code\":\"import hashlib\\nprint(hashlib.sha256(\\\"0123456789abcdef0123456789abcdef\\\".encode()).hexdigest()[:16])\",\"command\":[\"python\",\"-c\",\"import hashlib\\nprint(hashlib.sha256(\\\"0123456789abcdef0123456789abcdef\\\".encode()).hexdigest()[:16])\"],\"expect\":\"3eb1bd439947eb76\",\"nonce\":\"0123456789abcdef0123456789abcdef\",\"tier\":\"1\"}"
+  },
+  {
+   "name": "a key added",
+   "bytes": "{\"body\":{\"code\":\"import hashlib\\nprint(hashlib.sha256(\\\"0123456789abcdef0123456789abcdef\\\".encode()).hexdigest()[:16])\",\"language\":\"python\"},\"capability\":\"execute\",\"code\":\"import hashlib\\nprint(hashlib.sha256(\\\"0123456789abcdef0123456789abcdef\\\".encode()).hexdigest()[:16])\",\"command\":[\"python\",\"-c\",\"import hashlib\\nprint(hashlib.sha256(\\\"0123456789abcdef0123456789abcdef\\\".encode()).hexdigest()[:16])\"],\"expect\":\"3eb1bd439947eb76\",\"extra\":1,\"nonce\":\"0123456789abcdef0123456789abcdef\",\"tier\":1}"
+  },
+  {
+   "name": "a key missing",
+   "bytes": "{\"body\":{\"code\":\"import hashlib\\nprint(hashlib.sha256(\\\"0123456789abcdef0123456789abcdef\\\".encode()).hexdigest()[:16])\",\"language\":\"python\"},\"capability\":\"execute\",\"code\":\"import hashlib\\nprint(hashlib.sha256(\\\"0123456789abcdef0123456789abcdef\\\".encode()).hexdigest()[:16])\",\"expect\":\"3eb1bd439947eb76\",\"nonce\":\"0123456789abcdef0123456789abcdef\",\"tier\":1}"
+  },
+  {
+   "name": "the code changed in one shape only",
+   "bytes": "{\"body\":{\"code\":\"print(1)\",\"language\":\"python\"},\"capability\":\"execute\",\"code\":\"import hashlib\\nprint(hashlib.sha256(\\\"0123456789abcdef0123456789abcdef\\\".encode()).hexdigest()[:16])\",\"command\":[\"python\",\"-c\",\"import hashlib\\nprint(hashlib.sha256(\\\"0123456789abcdef0123456789abcdef\\\".encode()).hexdigest()[:16])\"],\"expect\":\"3eb1bd439947eb76\",\"nonce\":\"0123456789abcdef0123456789abcdef\",\"tier\":1}"
+  },
+  {
+   "name": "the same object with spaces",
+   "bytes": "{\"body\": {\"code\": \"import hashlib\\nprint(hashlib.sha256(\\\"0123456789abcdef0123456789abcdef\\\".encode()).hexdigest()[:16])\", \"language\": \"python\"}, \"capability\": \"execute\", \"code\": \"import hashlib\\nprint(hashlib.sha256(\\\"0123456789abcdef0123456789abcdef\\\".encode()).hexdigest()[:16])\", \"command\": [\"python\", \"-c\", \"import hashlib\\nprint(hashlib.sha256(\\\"0123456789abcdef0123456789abcdef\\\".encode()).hexdigest()[:16])\"], \"expect\": \"3eb1bd439947eb76\", \"nonce\": \"0123456789abcdef0123456789abcdef\", \"tier\": 1}"
+  },
+  {
+   "name": "the same object, keys in another order",
+   "bytes": "{\"capability\":\"execute\",\"nonce\":\"0123456789abcdef0123456789abcdef\",\"expect\":\"3eb1bd439947eb76\",\"tier\":1,\"code\":\"import hashlib\\nprint(hashlib.sha256(\\\"0123456789abcdef0123456789abcdef\\\".encode()).hexdigest()[:16])\",\"command\":[\"python\",\"-c\",\"import hashlib\\nprint(hashlib.sha256(\\\"0123456789abcdef0123456789abcdef\\\".encode()).hexdigest()[:16])\"],\"body\":{\"code\":\"import hashlib\\nprint(hashlib.sha256(\\\"0123456789abcdef0123456789abcdef\\\".encode()).hexdigest()[:16])\",\"language\":\"python\"}}"
+  }
+ ]
+}

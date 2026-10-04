@@ -58,6 +58,30 @@ check("another seed gives another draw", cases["another seed"]["picks"] != three
 capped = cases["the cap is reached and the draw is shorter"]
 check("the cap case is shorter than its count", len(capped["picks"]) < capped["count"])
 
+import question as q  # noqa: E402
+
+Q = json.loads((Path(__file__).parent.parent / "vectors" / "question.json").read_text(encoding="ascii"))
+for c in Q["questions"]:
+    qu = q.question(c["nonce"])
+    check(f"question {c['nonce'][:8]}…: expected answer", qu["expect"] == c["expect"])
+    check(f"question {c['nonce'][:8]}…: code", qu["code"] == c["code"])
+    check(f"question {c['nonce'][:8]}…: canonical form", q.canonical(c["nonce"]).decode() == c["canonical"])
+    check(f"question {c['nonce'][:8]}…: hash", q.question_hash(c["nonce"]).hex() == c["question_hash"])
+for b in Q["bad_nonces"]:
+    try:
+        q.canonical(b["nonce"])
+        check(f"refuses a nonce: {b['why']}", False)
+    except ValueError:
+        check(f"refuses a nonce: {b['why']}", True)
+nonce = Q["verdicts"]["nonce"]
+for r in Q["verdicts"]["replies"]:
+    reply = bytes.fromhex(r["reply_hex"])
+    check(f"reply '{r['name']}': hash", q.reply_hash(reply).hex() == r["reply_hash"])
+    check(f"reply '{r['name']}': {r['verdict_name']}", q.verdict(reply, nonce) == r["verdict"])
+check("the fair question is fair", q.is_fair(Q["fair"].encode()))
+for u in Q["unfair"]:
+    check(f"refuses as unfair: {u['name']}", not q.is_fair(u["bytes"].encode()))
+
 print()
 print(f"{failures} failed" if failures else "all vectors match")
 sys.exit(1 if failures else 0)
