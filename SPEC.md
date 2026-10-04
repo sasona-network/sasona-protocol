@@ -362,7 +362,8 @@ A membership asks to leave, and leaves its seat at once. Its stake comes back af
 
 - **A membership is a stake, not a person.** Two memberships can be one person, and nothing here can tell.
 - **The stake is the same for everyone.** A stake that deters has to grow with what a false reading would be worth, which is the traffic a service carries. That needs purchases on chain (parts 7 and 8).
-- **Who reads is drawn, but a drawn member can decline,** by not committing, or by leaving. The service then goes to its next attempt or unread in that round, and the record shows which. The member who moves up into a freed seat does not read for rounds committed before the move.
+- **Who reads is drawn, but a drawn member can decline,** by not committing, or by leaving. The service then goes to its next attempt or unread in that round, and the record shows which. The member who moves up into a freed seat does not read for rounds committed before the move, neither for the seat it left nor for the one it took.
+- **A departure moves two seats' draws on.** When a membership leaves its seat, what was drawn to that seat and what was drawn to the last seat both go to their next attempt, for every round still in its hour. Whoever leaves picks the moment after the draw is public, and so does whoever upholds a challenge against a seated member, who need not be a member at all. Each departure costs a membership, so a group can only move draws on in proportion to the memberships it gives up.
 - **The reader picks the moment within the hour.** A reader working with a service can wait inside the window for it to be up.
 - **The opener writes the list and chooses when to open it.** As 1.7 says of the picks, an opener can also withhold a round after seeing the draw, which now includes its readers.
 
