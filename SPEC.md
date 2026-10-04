@@ -1,8 +1,8 @@
 # Sasona protocol
 
-**Version 0.5.0.** This version specifies the draw (section 1), the committed question (section 2), second readings (section 3), members (section 4) and challenges (section 5).
+**Version 0.6.0.** This version specifies the draw (section 1), the committed question (section 2), second readings (section 3), members (section 4), challenges (section 5) and the ranking (section 6).
 
-0.5.0 adds sections 4 and 5, and limits a reply to its first 10,000 bytes (2.4); no reading so far had a reply that long. 0.4.0 added section 3. 0.3.0 added section 2. 0.2.0 added that a list can be drawn once (1.3, 1.8) and stated two limits more plainly (1.7). Every value 0.1.0 computes is unchanged.
+0.6.0 adds section 6. 0.5.0 added sections 4 and 5, and limits a reply to its first 10,000 bytes (2.4); no reading so far had a reply that long. 0.4.0 added section 3. 0.3.0 added section 2. 0.2.0 added that a list can be drawn once (1.3, 1.8) and stated two limits more plainly (1.7). Every value 0.1.0 computes is unchanged.
 
 The words **MUST** and **MUST NOT** mark rules that change a result. An implementation that does otherwise computes different values from every other one and is not conformant.
 
@@ -418,7 +418,56 @@ If the stake has already come back to the member, the reading still stops counti
 | the verdict rule on the reply gives the recorded verdict | the verdict was misreported |
 | an upheld challenge had no answer that held within its 7 days | the stake was taken from a member who had answered |
 
-## 6. What this version does not specify
+## 6. Quotes and the ranking
+
+The member who read a service is the one who knows most about it right now. They say what they would charge to insure a purchase from it. Services are ranked by that price: cheap to insure ranks first, expensive ranks last, and a service nobody will insure is not listed. Nobody else decides the order.
+
+### 6.1 A quote
+
+A **quote** is a rate in basis points, from 1 to 10,000, of a purchase's price: what a buyer would pay to be covered if the purchase does not deliver. It is set on one reading, by the key that took it, and only if:
+
+- the reading counts (2.7) and its verdict is `delivered`. A service that did not deliver is not insured, so it is not listed
+- the reading was taken by a member (section 4)
+
+The member can change the rate or withdraw it at any time. The program records each change with its slot and its time. A quote that rises is the member saying the service looks worse than it did.
+
+### 6.2 When a quote stands
+
+At a moment `T`, a quote **stands** if:
+
+- it has a rate, that is, it was not withdrawn
+- its reading still counts. One upheld false (5.3) no longer does
+- `T` is within 30 days of the reading's reveal, the term a reading is current for
+- its membership is active at `T`. A member who has asked to leave, or lost the stake, insures nothing new
+
+### 6.3 The ranking
+
+At a moment `T`, for a list of services:
+
+1. a service's **premium** is the lowest rate among the standing quotes on its readings. If several quotes share it, the one that counts is on the reading revealed latest, then the smaller reading identifier
+2. services with a premium are ranked from the lowest premium to the highest
+3. services with the same premium are ranked by the reading behind the lowest quote: revealed latest first, then the smaller reading identifier, compared as bytes
+4. services with no standing quote are not ranked
+
+The fresher reading wins a tie because it says more about the service now.
+
+### 6.4 What a quote does and does not prove
+
+- **Until purchases are on chain, a quote costs nothing to give.** The ranking is what members say they would charge, not yet what they have to pay. Premiums are collected with purchases (part 8), and claims paid from stakes with chargebacks (part 7). That is what makes a low quote expensive to give falsely.
+- **A quote is one member's price, on one reading.** Several readings of the same service each carry their own. The ranking takes the lowest, so one member willing to insure cheaply is enough to rank a service high, and will be the one paying if they were wrong.
+- **The stake does not grow with the quote.** Every membership has the same stake, whatever it insures. 4.5 says when that changes.
+
+### 6.5 Checking a ranking
+
+| Check | If it fails |
+|---|---|
+| each quote ranked is on a reading that counts and says `delivered` | a service that did not deliver was listed |
+| it was set by the key that took the reading | someone else priced a reading they did not take |
+| it stands at `T`, as 6.2 says | an old, withdrawn or abandoned price was used |
+| each service's premium is its lowest standing quote | a higher price was shown than a member offered |
+| the order follows 6.3 | the services were reordered |
+
+## 7. What this version does not specify
 
 - **What goes into a round's list.** Which services are open for testing at a time, and how demand puts them there, comes with the parts that bring members and questions on chain.
 - **Who opens rounds and how often.** For now anyone may open one, for a bond, and it proves nothing except that its draw was fair.
@@ -426,7 +475,7 @@ If the stake has already come back to the member, the reading still stops counti
 
 ## Test values
 
-[`vectors/draw.json`](vectors/draw.json), [`vectors/question.json`](vectors/question.json), [`vectors/pair.json`](vectors/pair.json) and [`vectors/reader.json`](vectors/reader.json) hold inputs, the results every implementation must produce, and what every implementation must refuse:
+[`vectors/draw.json`](vectors/draw.json), [`vectors/question.json`](vectors/question.json), [`vectors/pair.json`](vectors/pair.json), [`vectors/reader.json`](vectors/reader.json) and [`vectors/ranking.json`](vectors/ranking.json) hold inputs, the results every implementation must produce, and what every implementation must refuse:
 
 ```bash
 python reference/check.py

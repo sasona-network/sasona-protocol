@@ -1,6 +1,7 @@
 //! Sasona protocol: the draw (SPEC.md section 1) here, the committed
 //! question (section 2) in `question`, second readings (section 3) in `pair`,
-//! and drawing the reader (section 4) in `reader`.
+//! drawing the reader (section 4) in `reader`, and the ranking (section 6)
+//! in `ranking`.
 //!
 //! Written from the specification rather than translated from the Python
 //! reference. Both are ours; an implementation by somebody else is what
@@ -8,6 +9,7 @@
 
 pub mod pair;
 pub mod question;
+pub mod ranking;
 pub mod reader;
 
 use hmac::{Hmac, Mac};

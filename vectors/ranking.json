@@ -1,0 +1,410 @@
+{
+ "version": "0.6.0",
+ "term_seconds": 2592000,
+ "standing": [
+  {
+   "name": "a standing quote",
+   "quote": {
+    "reading": "aa",
+    "rate": 120,
+    "counts": true,
+    "verdict": 1,
+    "by_reader": true,
+    "by_member": true,
+    "revealed_time": 8553600,
+    "member_active": true
+   },
+   "at": 8640000,
+   "stands": true
+  },
+  {
+   "name": "withdrawn",
+   "quote": {
+    "reading": "aa",
+    "rate": 0,
+    "counts": true,
+    "verdict": 1,
+    "by_reader": true,
+    "by_member": true,
+    "revealed_time": 8553600,
+    "member_active": true
+   },
+   "at": 8640000,
+   "stands": false
+  },
+  {
+   "name": "a rate above 10,000",
+   "quote": {
+    "reading": "aa",
+    "rate": 10001,
+    "counts": true,
+    "verdict": 1,
+    "by_reader": true,
+    "by_member": true,
+    "revealed_time": 8553600,
+    "member_active": true
+   },
+   "at": 8640000,
+   "stands": false
+  },
+  {
+   "name": "a reading upheld false",
+   "quote": {
+    "reading": "aa",
+    "rate": 120,
+    "counts": false,
+    "verdict": 1,
+    "by_reader": true,
+    "by_member": true,
+    "revealed_time": 8553600,
+    "member_active": true
+   },
+   "at": 8640000,
+   "stands": false
+  },
+  {
+   "name": "a reading that did not deliver",
+   "quote": {
+    "reading": "aa",
+    "rate": 120,
+    "counts": true,
+    "verdict": 2,
+    "by_reader": true,
+    "by_member": true,
+    "revealed_time": 8553600,
+    "member_active": true
+   },
+   "at": 8640000,
+   "stands": false
+  },
+  {
+   "name": "set by someone other than the reader",
+   "quote": {
+    "reading": "aa",
+    "rate": 120,
+    "counts": true,
+    "verdict": 1,
+    "by_reader": false,
+    "by_member": true,
+    "revealed_time": 8553600,
+    "member_active": true
+   },
+   "at": 8640000,
+   "stands": false
+  },
+  {
+   "name": "on a reading taken before members",
+   "quote": {
+    "reading": "aa",
+    "rate": 120,
+    "counts": true,
+    "verdict": 1,
+    "by_reader": true,
+    "by_member": false,
+    "revealed_time": 8553600,
+    "member_active": true
+   },
+   "at": 8640000,
+   "stands": false
+  },
+  {
+   "name": "the member asked to leave",
+   "quote": {
+    "reading": "aa",
+    "rate": 120,
+    "counts": true,
+    "verdict": 1,
+    "by_reader": true,
+    "by_member": true,
+    "revealed_time": 8553600,
+    "member_active": false
+   },
+   "at": 8640000,
+   "stands": false
+  },
+  {
+   "name": "revealed exactly 30 days ago",
+   "quote": {
+    "reading": "aa",
+    "rate": 120,
+    "counts": true,
+    "verdict": 1,
+    "by_reader": true,
+    "by_member": true,
+    "revealed_time": 6048000,
+    "member_active": true
+   },
+   "at": 8640000,
+   "stands": true
+  },
+  {
+   "name": "revealed 30 days and a second ago",
+   "quote": {
+    "reading": "aa",
+    "rate": 120,
+    "counts": true,
+    "verdict": 1,
+    "by_reader": true,
+    "by_member": true,
+    "revealed_time": 6047999,
+    "member_active": true
+   },
+   "at": 8640000,
+   "stands": false
+  }
+ ],
+ "rankings": [
+  {
+   "name": "cheapest first",
+   "at": 8640000,
+   "services": {
+    "https://a.example/x": [
+     {
+      "reading": "01",
+      "rate": 300,
+      "counts": true,
+      "verdict": 1,
+      "by_reader": true,
+      "by_member": true,
+      "revealed_time": 8553600,
+      "member_active": true
+     }
+    ],
+    "https://b.example/x": [
+     {
+      "reading": "02",
+      "rate": 100,
+      "counts": true,
+      "verdict": 1,
+      "by_reader": true,
+      "by_member": true,
+      "revealed_time": 8553600,
+      "member_active": true
+     }
+    ],
+    "https://c.example/x": [
+     {
+      "reading": "03",
+      "rate": 200,
+      "counts": true,
+      "verdict": 1,
+      "by_reader": true,
+      "by_member": true,
+      "revealed_time": 8553600,
+      "member_active": true
+     }
+    ]
+   },
+   "ranking": [
+    [
+     "https://b.example/x",
+     100
+    ],
+    [
+     "https://c.example/x",
+     200
+    ],
+    [
+     "https://a.example/x",
+     300
+    ]
+   ]
+  },
+  {
+   "name": "a service's premium is its lowest standing quote",
+   "at": 8640000,
+   "services": {
+    "https://a.example/x": [
+     {
+      "reading": "01",
+      "rate": 300,
+      "counts": true,
+      "verdict": 1,
+      "by_reader": true,
+      "by_member": true,
+      "revealed_time": 8553600,
+      "member_active": true
+     },
+     {
+      "reading": "04",
+      "rate": 90,
+      "counts": true,
+      "verdict": 1,
+      "by_reader": true,
+      "by_member": true,
+      "revealed_time": 8553600,
+      "member_active": true
+     },
+     {
+      "reading": "05",
+      "rate": 50,
+      "counts": false,
+      "verdict": 1,
+      "by_reader": true,
+      "by_member": true,
+      "revealed_time": 8553600,
+      "member_active": true
+     }
+    ],
+    "https://b.example/x": [
+     {
+      "reading": "02",
+      "rate": 100,
+      "counts": true,
+      "verdict": 1,
+      "by_reader": true,
+      "by_member": true,
+      "revealed_time": 8553600,
+      "member_active": true
+     }
+    ]
+   },
+   "ranking": [
+    [
+     "https://a.example/x",
+     90
+    ],
+    [
+     "https://b.example/x",
+     100
+    ]
+   ]
+  },
+  {
+   "name": "a service with no standing quote is not listed",
+   "at": 8640000,
+   "services": {
+    "https://a.example/x": [
+     {
+      "reading": "01",
+      "rate": 300,
+      "counts": true,
+      "verdict": 1,
+      "by_reader": true,
+      "by_member": true,
+      "revealed_time": 8553600,
+      "member_active": false
+     }
+    ],
+    "https://b.example/x": [],
+    "https://c.example/x": [
+     {
+      "reading": "03",
+      "rate": 200,
+      "counts": true,
+      "verdict": 1,
+      "by_reader": true,
+      "by_member": true,
+      "revealed_time": 8553600,
+      "member_active": true
+     }
+    ]
+   },
+   "ranking": [
+    [
+     "https://c.example/x",
+     200
+    ]
+   ]
+  },
+  {
+   "name": "the same premium: the fresher reading first",
+   "at": 8640000,
+   "services": {
+    "https://a.example/x": [
+     {
+      "reading": "01",
+      "rate": 100,
+      "counts": true,
+      "verdict": 1,
+      "by_reader": true,
+      "by_member": true,
+      "revealed_time": 8208000,
+      "member_active": true
+     }
+    ],
+    "https://b.example/x": [
+     {
+      "reading": "02",
+      "rate": 100,
+      "counts": true,
+      "verdict": 1,
+      "by_reader": true,
+      "by_member": true,
+      "revealed_time": 8467200,
+      "member_active": true
+     }
+    ]
+   },
+   "ranking": [
+    [
+     "https://b.example/x",
+     100
+    ],
+    [
+     "https://a.example/x",
+     100
+    ]
+   ]
+  },
+  {
+   "name": "the same premium and reveal: the smaller reading first",
+   "at": 8640000,
+   "services": {
+    "https://a.example/x": [
+     {
+      "reading": "f0",
+      "rate": 100,
+      "counts": true,
+      "verdict": 1,
+      "by_reader": true,
+      "by_member": true,
+      "revealed_time": 8553600,
+      "member_active": true
+     }
+    ],
+    "https://b.example/x": [
+     {
+      "reading": "0f",
+      "rate": 100,
+      "counts": true,
+      "verdict": 1,
+      "by_reader": true,
+      "by_member": true,
+      "revealed_time": 8553600,
+      "member_active": true
+     }
+    ]
+   },
+   "ranking": [
+    [
+     "https://b.example/x",
+     100
+    ],
+    [
+     "https://a.example/x",
+     100
+    ]
+   ]
+  },
+  {
+   "name": "nothing stands",
+   "at": 8640000,
+   "services": {
+    "https://a.example/x": [
+     {
+      "reading": "01",
+      "rate": 0,
+      "counts": true,
+      "verdict": 1,
+      "by_reader": true,
+      "by_member": true,
+      "revealed_time": 8553600,
+      "member_active": true
+     }
+    ]
+   },
+   "ranking": []
+  }
+ ]
+}

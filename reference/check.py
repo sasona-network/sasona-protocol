@@ -104,6 +104,15 @@ for c in RV["cases"]:
     check(f"reader: {c['name']}: the draws", draws == c["attempts"])
     check(f"reader: {c['name']}: seat {c['reader']}", rd.reader(f, c["service"], m, c["committed_slot"], c["seats"], c["first_reader"]) == c["reader"])
 
+import ranking as rk  # noqa: E402
+
+KV = json.loads((Path(__file__).parent.parent / "vectors" / "ranking.json").read_text(encoding="ascii"))
+check("ranking: a reading is current for 30 days", KV["term_seconds"] == rk.TERM_SECONDS)
+for c in KV["standing"]:
+    check(f"quote {'stands' if c['stands'] else 'does not stand'}: {c['name']}", rk.stands(c["quote"], c["at"]) == c["stands"])
+for c in KV["rankings"]:
+    check(f"ranking: {c['name']}", [list(x) for x in rk.rank(c["services"], c["at"])] == c["ranking"])
+
 print()
 print(f"{failures} failed" if failures else "all vectors match")
 sys.exit(1 if failures else 0)
