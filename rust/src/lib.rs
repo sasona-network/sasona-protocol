@@ -5,6 +5,7 @@
 //! reference. Both are ours; an implementation by somebody else is what
 //! would really test the specification.
 
+pub mod pair;
 pub mod question;
 
 use hmac::{Hmac, Mac};

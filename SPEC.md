@@ -1,8 +1,8 @@
 # Sasona protocol
 
-**Version 0.3.0.** This version specifies the draw (section 1) and the committed question (section 2).
+**Version 0.4.0.** This version specifies the draw (section 1), the committed question (section 2) and second readings (section 3).
 
-0.3.0 adds section 2. 0.2.0 added that a list can be drawn once (1.3, 1.8) and stated two limits more plainly (1.7). Every value 0.1.0 computes is unchanged.
+0.4.0 adds section 3. 0.3.0 added section 2. 0.2.0 added that a list can be drawn once (1.3, 1.8) and stated two limits more plainly (1.7). Every value 0.1.0 computes is unchanged.
 
 The words **MUST** and **MUST NOT** mark rules that change a result. An implementation that does otherwise computes different values from every other one and is not conformant.
 
@@ -240,15 +240,66 @@ A reading not revealed within 9,000 slots, about an hour, can only be marked **l
 | the nonce's record names this reading | the nonce was used by an earlier reading, and this one does not count |
 | the reading's service is, byte for byte, one of its round's published picks | the service was not drawn, or was spelt differently to be tested twice |
 
-## 3. What this version does not specify
+## 3. Second readings
+
+A reading can be wrong, and a service that worked can stop working. A second reading tests the service again, and set beside the first, it settles some of that.
+
+### 3.1 Which readings are re-read
+
+They are drawn, not chosen. A **re-read round** is an ordinary round (section 1) whose list is services that already have a revealed reading. Its picks are read again.
+
+Two numbers come out of this and they **MUST NOT** be reported as one:
+
+- the share of readings **drawn** for a second reading, which is a choice, made when the re-read round is committed
+- the share actually **re-read**, which is the measurement
+
+A round can draw every reading and re-read none of them. Reporting the first as if it were the second reports an intention as a result.
+
+### 3.2 A second reading
+
+A second reading is an ordinary reading (section 2) taken in a re-read round, which names, when it is committed, the first reading it re-tests. It counts only if:
+
+- it is of the same service, byte for byte
+- the first reading was revealed before the second was committed
+- the two were taken in different rounds
+- the second reader is not the first reader. Someone checking their own reading checks nothing
+
+### 3.3 What a pair settles
+
+| Outcome | Code | When |
+|---|---|---|
+| `works_now` | 1 | the second reading is `delivered` |
+| `false_or_decayed` | 2 | the first is `delivered` and the second is not |
+| `agreed_fails` | 3 | neither is `delivered` |
+
+`works_now` does not say whether the first reading was right. A service that failed then and delivers now works now, whichever reading was wrong.
+
+`false_or_decayed` **MUST NOT** be reported as a false reading. A service that delivered in September can fail in November because a quota ran out or a key expired, with nobody lying. Whether the first reading was false is a question about the first reading's own evidence, and a second reading cannot answer it.
+
+### 3.4 What a pair does not prove
+
+- **A different key is not a different person.** Until members stake on what they read, one person can read with two keys. Part 5 is what makes the second reader someone with something to lose.
+- **Both readings are still their readers' word**, as 2.6 says of every reading.
+
+### 3.5 Checking a pair
+
+| Check | If it fails |
+|---|---|
+| both readings pass 2.7 | one of them does not count, and neither does the pair |
+| the services are the same bytes | it is a reading of something else |
+| the first was revealed before the second was committed | the second reader could have seen the first's result |
+| the readers differ | it is a reading checking itself |
+| the recorded outcome follows 3.3 from the two verdicts | the outcome was misreported |
+
+## 4. What this version does not specify
 
 - **What goes into a round's list.** Which services are open for testing at a time, and how demand puts them there, comes with the parts that bring members and questions on chain.
 - **Who opens rounds and how often.** For now anyone may open one, for a bond, and it proves nothing except that its draw was fair.
-- **Capabilities other than `execute`**, and how two readings of one service are compared.
+- **Capabilities other than `execute`.**
 
 ## Test values
 
-[`vectors/draw.json`](vectors/draw.json) and [`vectors/question.json`](vectors/question.json) hold inputs, the results every implementation must produce, and what every implementation must refuse:
+[`vectors/draw.json`](vectors/draw.json), [`vectors/question.json`](vectors/question.json) and [`vectors/pair.json`](vectors/pair.json) hold inputs, the results every implementation must produce, and what every implementation must refuse:
 
 ```bash
 python reference/check.py

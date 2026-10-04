@@ -1,0 +1,139 @@
+{
+ "version": "0.4.0",
+ "outcomes": [
+  {
+   "first": 1,
+   "second": 1,
+   "first_name": "delivered",
+   "second_name": "delivered",
+   "outcome": 1,
+   "outcome_name": "works_now"
+  },
+  {
+   "first": 1,
+   "second": 2,
+   "first_name": "delivered",
+   "second_name": "wrong_answer",
+   "outcome": 2,
+   "outcome_name": "false_or_decayed"
+  },
+  {
+   "first": 1,
+   "second": 3,
+   "first_name": "delivered",
+   "second_name": "empty",
+   "outcome": 2,
+   "outcome_name": "false_or_decayed"
+  },
+  {
+   "first": 2,
+   "second": 1,
+   "first_name": "wrong_answer",
+   "second_name": "delivered",
+   "outcome": 1,
+   "outcome_name": "works_now"
+  },
+  {
+   "first": 2,
+   "second": 2,
+   "first_name": "wrong_answer",
+   "second_name": "wrong_answer",
+   "outcome": 3,
+   "outcome_name": "agreed_fails"
+  },
+  {
+   "first": 2,
+   "second": 3,
+   "first_name": "wrong_answer",
+   "second_name": "empty",
+   "outcome": 3,
+   "outcome_name": "agreed_fails"
+  },
+  {
+   "first": 3,
+   "second": 1,
+   "first_name": "empty",
+   "second_name": "delivered",
+   "outcome": 1,
+   "outcome_name": "works_now"
+  },
+  {
+   "first": 3,
+   "second": 2,
+   "first_name": "empty",
+   "second_name": "wrong_answer",
+   "outcome": 3,
+   "outcome_name": "agreed_fails"
+  },
+  {
+   "first": 3,
+   "second": 3,
+   "first_name": "empty",
+   "second_name": "empty",
+   "outcome": 3,
+   "outcome_name": "agreed_fails"
+  }
+ ],
+ "counting": [
+  {
+   "name": "a fair second reading",
+   "first_reader": "A",
+   "second_reader": "B",
+   "first_revealed_slot": 100,
+   "second_committed_slot": 200,
+   "same_service": true,
+   "same_round": false,
+   "counts": true
+  },
+  {
+   "name": "the same reader",
+   "first_reader": "A",
+   "second_reader": "A",
+   "first_revealed_slot": 100,
+   "second_committed_slot": 200,
+   "same_service": true,
+   "same_round": false,
+   "counts": false
+  },
+  {
+   "name": "committed before the first was revealed",
+   "first_reader": "A",
+   "second_reader": "B",
+   "first_revealed_slot": 100,
+   "second_committed_slot": 90,
+   "same_service": true,
+   "same_round": false,
+   "counts": false
+  },
+  {
+   "name": "committed in the slot the first was revealed",
+   "first_reader": "A",
+   "second_reader": "B",
+   "first_revealed_slot": 100,
+   "second_committed_slot": 100,
+   "same_service": true,
+   "same_round": false,
+   "counts": false
+  },
+  {
+   "name": "a different service",
+   "first_reader": "A",
+   "second_reader": "B",
+   "first_revealed_slot": 100,
+   "second_committed_slot": 200,
+   "same_service": false,
+   "same_round": false,
+   "counts": false
+  },
+  {
+   "name": "the same round",
+   "first_reader": "A",
+   "second_reader": "B",
+   "first_revealed_slot": 100,
+   "second_committed_slot": 200,
+   "same_service": true,
+   "same_round": true,
+   "counts": false
+  }
+ ]
+}
