@@ -434,15 +434,21 @@ Each change is recorded on chain, with its slot and time, in the event the progr
 
 At the moment the ranking is read, a service's readings are those that count (2.7) and were revealed by then, ordered as in 3.2: revealed in the latest slot first, then committed earliest, then the smaller identifier.
 
-A quote on one of them **stands** if its reading says `delivered`, is no more than 30 days old at that moment, and has a rate from 1 to 10,000 set by its member, whose membership is still active.
+A **failing pair** is two readings next to each other in that order that both say the service did not deliver, taken by different keys. One failing reading is not enough. A reader can make a failing reply up as easily as anything else, and it costs them nothing (5.4), so one reader alone cannot take a service off the list. Two, from two keys, say it more firmly, whether the service failed from the start or stopped working since (3.3).
 
-A service is **failing** if its two latest readings both say it did not deliver, and were taken by different keys. One failing reading is not enough. A reader can make a failing reply up as easily as anything else, and it costs them nothing (5.4), so one reader alone cannot take a service off the list. Two, from two keys, say it more firmly, whether the service failed from the start or stopped working since (3.3).
+A quote on one of the readings **stands** if:
+
+- its reading is newer than the latest failing pair, if there is one
+- its reading says `delivered` and is no more than 30 days old at that moment
+- its rate is from 1 to 10,000, set by the reading's member, whose membership is still active
+
+So once two keys have found a service failing, every quote given before stops counting, and it takes a newer reading, quoted by its own member, to list the service again. Taking a service off the list needs two keys; putting it back needs one reading and someone willing to insure it.
 
 ### 6.3 The ranking
 
 At the moment it is read:
 
-1. a service is **listed** if it is not failing and at least one quote on its readings stands
+1. a service is **listed** if at least one quote on its readings stands
 2. its **premium** is the lowest rate among those quotes. If several share it, the one that counts is on the latest reading, as 6.2 orders them
 3. listed services are ranked from the lowest premium to the highest
 4. services with the same premium are ranked by the reading behind their premium, the latest first
@@ -456,6 +462,7 @@ The ranking is of the moment it is read. The chain keeps each quote's latest rat
 
 - **Until purchases are on chain, a quote costs nothing to give.** The ranking is what members say they would charge, not yet what they have to pay. Premiums are collected with purchases (part 8), and claims paid from stakes with chargebacks (part 7). That is what makes a low quote expensive to give falsely. A member can also withdraw a quote and set it again when it suits them, and nothing here sees it.
 - **Being the reader is not expensive.** Anyone can open a round with a list of their choosing, and an operator holding several memberships can open rounds that list only their own service until one of their memberships is drawn, then quote it cheaply. Nothing here stops that price from being the premium. Once purchases are covered at it (parts 7 and 8), it is what they pay out at. The same works the other way, more weakly: to take a rival off the list takes two failing readings from two keys, which one person holding two memberships can still arrange. Which services go into lists is not specified yet (section 7), and until it is, a ranking is only as good as the readings behind it.
+- **One reading puts a service back on the list** after two keys found it failing, if its member quotes it, and an operator holding memberships can arrange that reading as above. Its quote is new, though, and its member is the one exposed by it.
 - **A failing service can stay listed** after one honest reading finds it failing, at a quote set before, until a second reading from another key agrees or its quote runs out. The member who set that quote is the one exposed while it stands.
 - **The stake does not grow with the quote.** Every membership has the same stake, whatever it insures. 4.5 says when that changes.
 
@@ -467,7 +474,7 @@ Whoever ranks needs, besides the program's accounts: each round's published list
 |---|---|
 | the readings weighed are those that count, revealed by the moment of the ranking | a reading that does not count moved the price |
 | each premium is the lowest quote that stands, as 6.2 says | a higher price was shown, or a stale one used |
-| no service ranked has two latest readings that failed, from two keys | a failing service was listed |
+| no quote counted is on a reading older than the service's latest failing pair | a price set before two keys found the service failing was used |
 | the quote was set by the key that took the reading | someone else priced a reading they did not take |
 | the order follows 6.3 | the services were reordered |
 

@@ -34,10 +34,14 @@ pub fn weighed(readings: &[Reading], now: i64) -> Vec<&Reading> {
     w
 }
 
-/// 6.2: the two latest readings both failed, and two different keys took them.
-pub fn failing(readings: &[Reading], now: i64) -> bool {
-    let w = weighed(readings, now);
-    w.len() >= 2 && w[0].verdict != 1 && w[1].verdict != 1 && w[0].key != w[1].key
+/// 6.2: the weighed readings newer than the latest failing pair: two readings
+/// next to each other that both failed, taken by different keys.
+pub fn newer_than_failing_pair(readings: &[Reading], now: i64) -> Vec<&Reading> {
+    let mut w = weighed(readings, now);
+    if let Some(i) = w.windows(2).position(|p| p[0].verdict != 1 && p[1].verdict != 1 && p[0].key != p[1].key) {
+        w.truncate(i);
+    }
+    w
 }
 
 /// 6.2: whether the quote on a weighed reading stands at `now`.
@@ -51,10 +55,7 @@ pub fn stands(r: &Reading, now: i64) -> bool {
 
 /// 6.3, steps 1 and 2: the reading whose quote is the premium, if listed.
 pub fn behind(readings: &[Reading], now: i64) -> Option<&Reading> {
-    if failing(readings, now) {
-        return None;
-    }
-    weighed(readings, now).into_iter().filter(|r| stands(r, now)).min_by_key(|r| (r.quote, order(r)))
+    newer_than_failing_pair(readings, now).into_iter().filter(|r| stands(r, now)).min_by_key(|r| (r.quote, order(r)))
 }
 
 pub fn premium(readings: &[Reading], now: i64) -> Option<u32> {

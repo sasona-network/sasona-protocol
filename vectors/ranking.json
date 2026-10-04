@@ -527,6 +527,183 @@
    "premium": 50
   },
   {
+   "name": "after a failing pair, a newer reading with no quote does not bring the old quote back",
+   "now": 8640000,
+   "readings": [
+    {
+     "id": "aa",
+     "key": "A",
+     "revealed_slot": 1000000,
+     "committed_slot": 999990,
+     "revealed_time": 7862400,
+     "counts": true,
+     "verdict": 1,
+     "member_active": true,
+     "quote": 5,
+     "quote_by_reader": true
+    },
+    {
+     "id": "bb",
+     "key": "B",
+     "revealed_slot": 1000005,
+     "committed_slot": 999995,
+     "revealed_time": 8208000,
+     "counts": true,
+     "verdict": 2,
+     "member_active": true,
+     "quote": 0,
+     "quote_by_reader": true
+    },
+    {
+     "id": "cc",
+     "key": "C",
+     "revealed_slot": 1000007,
+     "committed_slot": 999997,
+     "revealed_time": 8294400,
+     "counts": true,
+     "verdict": 2,
+     "member_active": true,
+     "quote": 0,
+     "quote_by_reader": true
+    },
+    {
+     "id": "dd",
+     "key": "D",
+     "revealed_slot": 1000009,
+     "committed_slot": 999999,
+     "revealed_time": 8467200,
+     "counts": true,
+     "verdict": 1,
+     "member_active": true,
+     "quote": 0,
+     "quote_by_reader": true
+    }
+   ],
+   "premium": null
+  },
+  {
+   "name": "after a failing pair, a newer reading's own quote lists the service",
+   "now": 8640000,
+   "readings": [
+    {
+     "id": "aa",
+     "key": "A",
+     "revealed_slot": 1000000,
+     "committed_slot": 999990,
+     "revealed_time": 7862400,
+     "counts": true,
+     "verdict": 1,
+     "member_active": true,
+     "quote": 5,
+     "quote_by_reader": true
+    },
+    {
+     "id": "bb",
+     "key": "B",
+     "revealed_slot": 1000005,
+     "committed_slot": 999995,
+     "revealed_time": 8208000,
+     "counts": true,
+     "verdict": 2,
+     "member_active": true,
+     "quote": 0,
+     "quote_by_reader": true
+    },
+    {
+     "id": "cc",
+     "key": "C",
+     "revealed_slot": 1000007,
+     "committed_slot": 999997,
+     "revealed_time": 8294400,
+     "counts": true,
+     "verdict": 2,
+     "member_active": true,
+     "quote": 0,
+     "quote_by_reader": true
+    },
+    {
+     "id": "dd",
+     "key": "D",
+     "revealed_slot": 1000009,
+     "committed_slot": 999999,
+     "revealed_time": 8467200,
+     "counts": true,
+     "verdict": 1,
+     "member_active": true,
+     "quote": 300,
+     "quote_by_reader": true
+    }
+   ],
+   "premium": 300
+  },
+  {
+   "name": "an older failing pair still cuts off quotes before it",
+   "now": 8640000,
+   "readings": [
+    {
+     "id": "aa",
+     "key": "A",
+     "revealed_slot": 1000000,
+     "committed_slot": 999990,
+     "revealed_time": 7603200,
+     "counts": true,
+     "verdict": 1,
+     "member_active": true,
+     "quote": 5,
+     "quote_by_reader": true
+    },
+    {
+     "id": "bb",
+     "key": "B",
+     "revealed_slot": 1000002,
+     "committed_slot": 999992,
+     "revealed_time": 7689600,
+     "counts": true,
+     "verdict": 2,
+     "member_active": true,
+     "quote": 0,
+     "quote_by_reader": true
+    },
+    {
+     "id": "cc",
+     "key": "C",
+     "revealed_slot": 1000003,
+     "committed_slot": 999993,
+     "revealed_time": 7776000,
+     "counts": true,
+     "verdict": 2,
+     "member_active": true,
+     "quote": 0,
+     "quote_by_reader": true
+    },
+    {
+     "id": "dd",
+     "key": "D",
+     "revealed_slot": 1000005,
+     "committed_slot": 999995,
+     "revealed_time": 8208000,
+     "counts": true,
+     "verdict": 1,
+     "member_active": true,
+     "quote": 300,
+     "quote_by_reader": true
+    },
+    {
+     "id": "ee",
+     "key": "E",
+     "revealed_slot": 1000009,
+     "committed_slot": 999999,
+     "revealed_time": 8467200,
+     "counts": true,
+     "verdict": 2,
+     "member_active": true,
+     "quote": 0,
+     "quote_by_reader": true
+    }
+   ],
+   "premium": 300
+  },
+  {
    "name": "the same rate twice: either way the premium",
    "now": 8640000,
    "readings": [

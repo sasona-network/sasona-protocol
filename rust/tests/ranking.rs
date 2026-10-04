@@ -27,7 +27,7 @@ fn every_ranking() {
     let v: serde_json::Value = serde_json::from_str(&std::fs::read_to_string(path).unwrap()).unwrap();
     assert_eq!(v["term_seconds"].as_i64().unwrap(), TERM_SECONDS);
     let premiums = v["premiums"].as_array().unwrap();
-    assert!(premiums.len() >= 21);
+    assert!(premiums.len() >= 24);
     for c in premiums {
         let got = premium(&readings(&c["readings"]), c["now"].as_i64().unwrap());
         assert_eq!(got.map(u64::from), c["premium"].as_u64(), "{}", c["name"]);

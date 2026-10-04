@@ -19,10 +19,15 @@ def weighed(readings: list, now: int) -> list:
     return sorted((r for r in readings if r["counts"] and r["revealed_time"] <= now), key=order)
 
 
-def failing(readings: list, now: int) -> bool:
-    """SPEC.md 6.2: the two latest readings both failed, and two keys took them."""
+def newer_than_failing_pair(readings: list, now: int) -> list:
+    """SPEC.md 6.2: the weighed readings newer than the latest failing pair,
+    all of them if there is none."""
     w = weighed(readings, now)
-    return len(w) >= 2 and w[0]["verdict"] != DELIVERED and w[1]["verdict"] != DELIVERED and w[0]["key"] != w[1]["key"]
+    for i in range(len(w) - 1):
+        a, b = w[i], w[i + 1]
+        if a["verdict"] != DELIVERED and b["verdict"] != DELIVERED and a["key"] != b["key"]:
+            return w[:i]
+    return w
 
 
 def stands(r: dict, now: int) -> bool:
@@ -33,9 +38,7 @@ def stands(r: dict, now: int) -> bool:
 
 def behind(readings: list, now: int):
     """SPEC.md 6.3 steps 1 and 2: the reading whose quote is the premium, or None if not listed."""
-    if failing(readings, now):
-        return None
-    standing = [r for r in weighed(readings, now) if stands(r, now)]
+    standing = [r for r in newer_than_failing_pair(readings, now) if stands(r, now)]
     return min(standing, key=lambda r: (r["quote"], order(r))) if standing else None
 
 
