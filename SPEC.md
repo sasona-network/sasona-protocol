@@ -257,10 +257,12 @@ A round can draw every reading and re-read none of them. Reporting the first as 
 
 ### 3.2 A second reading
 
-A second reading is an ordinary reading (section 2) taken in a re-read round, which names, when it is committed, the first reading it re-tests. It counts only if:
+A second reading is an ordinary reading (section 2) taken in a re-read round, which names, when it is committed, the first reading it re-tests. The first reading is not the second reader's to choose: it is the **latest** reading of that service revealed before the re-read round was committed. A reader who could name any earlier reading could pick the one whose verdict they want to contradict.
+
+It counts only if:
 
 - it is of the same service, byte for byte
-- the first reading was revealed before the second was committed
+- the first reading is the latest one of that service revealed before the re-read round was committed
 - the two were taken in different rounds
 - the second reader is not the first reader. Someone checking their own reading checks nothing
 
@@ -287,7 +289,8 @@ A second reading is an ordinary reading (section 2) taken in a re-read round, wh
 |---|---|
 | both readings pass 2.7 | one of them does not count, and neither does the pair |
 | the services are the same bytes | it is a reading of something else |
-| the first was revealed before the second was committed | the second reader could have seen the first's result |
+| the first was revealed before the re-read round was committed | which reading is the latest was not settled when the list was committed |
+| no other reading of the service was revealed after the first and before the re-read round was committed | the second reader chose which reading to contradict |
 | the readers differ | it is a reading checking itself |
 | the recorded outcome follows 3.3 from the two verdicts | the outcome was misreported |
 

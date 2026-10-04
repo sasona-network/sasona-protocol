@@ -15,13 +15,14 @@ def main():
     outcomes = [{"first": a, "second": b, "first_name": NAMES[a], "second_name": NAMES[b],
                  "outcome": p.outcome(a, b), "outcome_name": p.OUTCOMES[p.outcome(a, b)]}
                 for a in (1, 2, 3) for b in (1, 2, 3)]
-    base = dict(first_reader="A", second_reader="B", first_revealed_slot=100, second_committed_slot=200,
-                same_service=True, same_round=False)
+    base = dict(first_reader="A", second_reader="B", first_revealed_slot=100, round_committed_slot=200,
+                same_service=True, same_round=False, first_is_latest=True)
     cases = [
         ("a fair second reading", {}, True),
         ("the same reader", {"second_reader": "A"}, False),
-        ("committed before the first was revealed", {"second_committed_slot": 90}, False),
-        ("committed in the slot the first was revealed", {"second_committed_slot": 100}, False),
+        ("re-read round committed before the first was revealed", {"round_committed_slot": 90}, False),
+        ("re-read round committed in the slot the first was revealed", {"round_committed_slot": 100}, False),
+        ("names a reading that is not the latest", {"first_is_latest": False}, False),
         ("a different service", {"same_service": False}, False),
         ("the same round", {"same_round": True}, False),
     ]

@@ -17,7 +17,7 @@ pub fn outcome(first: u8, second: u8) -> Option<u8> {
 }
 
 /// 3.2: whether a second reading counts as one.
-pub fn counts(first_reader: &str, second_reader: &str, first_revealed_slot: u64, second_committed_slot: u64,
-              same_service: bool, same_round: bool) -> bool {
-    same_service && !same_round && first_reader != second_reader && first_revealed_slot < second_committed_slot
+pub fn counts(first_reader: &str, second_reader: &str, first_revealed_slot: u64, round_committed_slot: u64,
+              same_service: bool, same_round: bool, first_is_latest: bool) -> bool {
+    same_service && !same_round && first_is_latest && first_reader != second_reader && first_revealed_slot < round_committed_slot
 }

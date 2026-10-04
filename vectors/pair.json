@@ -80,9 +80,10 @@
    "first_reader": "A",
    "second_reader": "B",
    "first_revealed_slot": 100,
-   "second_committed_slot": 200,
+   "round_committed_slot": 200,
    "same_service": true,
    "same_round": false,
+   "first_is_latest": true,
    "counts": true
   },
   {
@@ -90,29 +91,43 @@
    "first_reader": "A",
    "second_reader": "A",
    "first_revealed_slot": 100,
-   "second_committed_slot": 200,
+   "round_committed_slot": 200,
    "same_service": true,
    "same_round": false,
+   "first_is_latest": true,
    "counts": false
   },
   {
-   "name": "committed before the first was revealed",
+   "name": "re-read round committed before the first was revealed",
    "first_reader": "A",
    "second_reader": "B",
    "first_revealed_slot": 100,
-   "second_committed_slot": 90,
+   "round_committed_slot": 90,
    "same_service": true,
    "same_round": false,
+   "first_is_latest": true,
    "counts": false
   },
   {
-   "name": "committed in the slot the first was revealed",
+   "name": "re-read round committed in the slot the first was revealed",
    "first_reader": "A",
    "second_reader": "B",
    "first_revealed_slot": 100,
-   "second_committed_slot": 100,
+   "round_committed_slot": 100,
    "same_service": true,
    "same_round": false,
+   "first_is_latest": true,
+   "counts": false
+  },
+  {
+   "name": "names a reading that is not the latest",
+   "first_reader": "A",
+   "second_reader": "B",
+   "first_revealed_slot": 100,
+   "round_committed_slot": 200,
+   "same_service": true,
+   "same_round": false,
+   "first_is_latest": false,
    "counts": false
   },
   {
@@ -120,9 +135,10 @@
    "first_reader": "A",
    "second_reader": "B",
    "first_revealed_slot": 100,
-   "second_committed_slot": 200,
+   "round_committed_slot": 200,
    "same_service": false,
    "same_round": false,
+   "first_is_latest": true,
    "counts": false
   },
   {
@@ -130,9 +146,10 @@
    "first_reader": "A",
    "second_reader": "B",
    "first_revealed_slot": 100,
-   "second_committed_slot": 200,
+   "round_committed_slot": 200,
    "same_service": true,
    "same_round": true,
+   "first_is_latest": true,
    "counts": false
   }
  ]

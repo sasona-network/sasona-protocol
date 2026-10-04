@@ -17,9 +17,10 @@ fn every_pair() {
             c["first_reader"].as_str().unwrap(),
             c["second_reader"].as_str().unwrap(),
             c["first_revealed_slot"].as_u64().unwrap(),
-            c["second_committed_slot"].as_u64().unwrap(),
+            c["round_committed_slot"].as_u64().unwrap(),
             c["same_service"].as_bool().unwrap(),
             c["same_round"].as_bool().unwrap(),
+            c["first_is_latest"].as_bool().unwrap(),
         );
         assert_eq!(got, c["counts"].as_bool().unwrap(), "{}", c["name"]);
     }

@@ -88,7 +88,7 @@ PV = json.loads((Path(__file__).parent.parent / "vectors" / "pair.json").read_te
 for o in PV["outcomes"]:
     check(f"pair {o['first_name']} then {o['second_name']}: {o['outcome_name']}", pr.outcome(o["first"], o["second"]) == o["outcome"])
 for c in PV["counting"]:
-    args = {k: c[k] for k in ("first_reader", "second_reader", "first_revealed_slot", "second_committed_slot", "same_service", "same_round")}
+    args = {k: c[k] for k in ("first_reader", "second_reader", "first_revealed_slot", "round_committed_slot", "same_service", "same_round", "first_is_latest")}
     check(f"second reading {'counts' if c['counts'] else 'does not count'}: {c['name']}", pr.counts(**args) == c["counts"])
 
 print()

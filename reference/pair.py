@@ -16,8 +16,8 @@ def outcome(first: int, second: int) -> int:
     return AGREED_FAILS
 
 
-def counts(first_reader: str, second_reader: str, first_revealed_slot: int, second_committed_slot: int,
-           same_service: bool, same_round: bool) -> bool:
+def counts(first_reader: str, second_reader: str, first_revealed_slot: int, round_committed_slot: int,
+           same_service: bool, same_round: bool, first_is_latest: bool) -> bool:
     """SPEC.md 3.2: whether a second reading counts as one."""
-    return (same_service and not same_round and first_reader != second_reader
-            and first_revealed_slot < second_committed_slot)
+    return (same_service and not same_round and first_is_latest and first_reader != second_reader
+            and first_revealed_slot < round_committed_slot)
