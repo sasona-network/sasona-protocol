@@ -1,0 +1,9 @@
+rust/target/
+__pycache__/
+*.pyc
+# Keypairs never enter this repository, under any name.
+*keypair*.json
+id.json
+*.key
+*.pem
+.env*
