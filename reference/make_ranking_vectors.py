@@ -16,12 +16,17 @@ NOW = 100 * DAY
 SLOT = 1_000_000
 
 
-def r(id, quote, days_ago=1, slot=SLOT, **over):
-    """A reading revealed `days_ago` days ago in `slot`, committed 10 slots before."""
-    base = {"id": id, "revealed_slot": slot, "committed_slot": slot - 10, "revealed_time": NOW - days_ago * DAY,
-            "counts": True, "verdict": 1, "member_active": True, "quote": quote, "quote_by_reader": True}
+def r(id, quote, days_ago=1, slot=SLOT, key="A", **over):
+    """A reading by `key`, revealed `days_ago` days ago in `slot`, committed 10 slots before."""
+    base = {"id": id, "key": key, "revealed_slot": slot, "committed_slot": slot - 10,
+            "revealed_time": NOW - days_ago * DAY, "counts": True, "verdict": 1, "member_active": True,
+            "quote": quote, "quote_by_reader": True}
     base.update(over)
     return base
+
+
+def failed(id, days_ago, slot, key):
+    return r(id, 0, days_ago=days_ago, slot=slot, key=key, verdict=2)
 
 
 def main():
@@ -33,22 +38,28 @@ def main():
         ("above 10,000", [r("aa", 10_001)], None),
         ("set by someone other than the reader", [r("aa", 120, quote_by_reader=False)], None),
         ("the member asked to leave", [r("aa", 120, member_active=False)], None),
-        ("the current reading says wrong answer", [r("aa", 120, verdict=2)], None),
-        ("the current reading says empty", [r("aa", 120, verdict=3)], None),
+        ("the only reading says wrong answer", [r("aa", 120, verdict=2)], None),
+        ("the only reading says empty", [r("aa", 120, verdict=3)], None),
         ("revealed exactly 30 days ago", [r("aa", 120, days_ago=30)], 120),
         ("revealed 30 days and a second ago", [dict(r("aa", 120, days_ago=30), revealed_time=NOW - 30 * DAY - 1)], None),
         ("revealed after the moment asked about", [dict(r("aa", 120), revealed_time=NOW + 1)], None),
         ("no reading counts", [r("aa", 120, counts=False)], None),
-        ("a newer reading that failed replaces a cheap old one",
-         [r("aa", 5, days_ago=10, slot=SLOT), r("bb", 0, days_ago=2, slot=SLOT + 500, verdict=2)], None),
-        ("a newer reading's own quote is the one that counts",
-         [r("aa", 5, days_ago=10, slot=SLOT), r("bb", 400, days_ago=2, slot=SLOT + 500)], 400),
-        ("a newer reading upheld false does not replace the old one",
-         [r("aa", 50, days_ago=10, slot=SLOT), r("bb", 5, days_ago=2, slot=SLOT + 500, counts=False)], 50),
-        ("revealed in the same slot: the one committed earliest is current",
-         [r("aa", 50, committed_slot=SLOT - 3), r("bb", 70, committed_slot=SLOT - 9)], 70),
-        ("same slot and commit: the smaller identifier is current",
-         [r("bb", 50), r("aa", 70)], 70),
+        ("the lowest of several standing quotes",
+         [r("aa", 300, days_ago=9, slot=SLOT), r("bb", 80, days_ago=5, slot=SLOT + 5, key="B"), r("cc", 200, days_ago=1, slot=SLOT + 9)], 80),
+        ("one newer failing reading does not take a service off the list",
+         [r("aa", 50, days_ago=9, slot=SLOT), failed("bb", 2, SLOT + 9, "B")], 50),
+        ("two latest readings failed, from two keys: failing",
+         [r("aa", 50, days_ago=9, slot=SLOT), failed("bb", 3, SLOT + 5, "B"), failed("cc", 2, SLOT + 9, "C")], None),
+        ("two latest readings failed, from one key: not failing",
+         [r("aa", 50, days_ago=9, slot=SLOT), failed("bb", 3, SLOT + 5, "B"), failed("cc", 2, SLOT + 9, "B")], 50),
+        ("a delivering reading between two failures: not failing",
+         [failed("aa", 9, SLOT, "B"), r("bb", 70, days_ago=5, slot=SLOT + 5, key="A"), failed("cc", 2, SLOT + 9, "C")], 70),
+        ("a newer reading with no quote leaves the older quote standing",
+         [r("aa", 60, days_ago=9, slot=SLOT), r("bb", 0, days_ago=2, slot=SLOT + 9, key="B")], 60),
+        ("a reading upheld false does not count towards failing",
+         [r("aa", 50, days_ago=9, slot=SLOT), failed("bb", 3, SLOT + 5, "B"), dict(failed("cc", 2, SLOT + 9, "C"), counts=False)], 50),
+        ("the same rate twice: either way the premium",
+         [r("bb", 70, slot=SLOT), r("aa", 70, slot=SLOT)], 70),
     ]
     premium_cases = []
     for name, readings, want in premiums:
@@ -62,8 +73,8 @@ def main():
             "https://b.example/x": [r("02", 100)],
             "https://c.example/x": [r("03", 200)],
         }, [["https://b.example/x", 100], ["https://c.example/x", 200], ["https://a.example/x", 300]]),
-        ("a service whose current reading failed is not listed", {
-            "https://a.example/x": [r("01", 50, days_ago=9), r("04", 0, days_ago=1, slot=SLOT + 9, verdict=2)],
+        ("a failing service is not listed", {
+            "https://a.example/x": [r("01", 50, days_ago=9), failed("04", 3, SLOT + 5, "B"), failed("05", 1, SLOT + 9, "C")],
             "https://b.example/x": [r("02", 100)],
         }, [["https://b.example/x", 100]]),
         ("the same premium: the fresher reading first", {

@@ -5,6 +5,7 @@ use sasona_draw::ranking::*;
 fn reading(v: &serde_json::Value) -> Reading {
     Reading {
         id: hex::decode(v["id"].as_str().unwrap()).unwrap(),
+        key: v["key"].as_str().unwrap().to_string(),
         revealed_slot: v["revealed_slot"].as_u64().unwrap(),
         committed_slot: v["committed_slot"].as_u64().unwrap(),
         revealed_time: v["revealed_time"].as_i64().unwrap(),
@@ -26,7 +27,7 @@ fn every_ranking() {
     let v: serde_json::Value = serde_json::from_str(&std::fs::read_to_string(path).unwrap()).unwrap();
     assert_eq!(v["term_seconds"].as_i64().unwrap(), TERM_SECONDS);
     let premiums = v["premiums"].as_array().unwrap();
-    assert!(premiums.len() >= 18);
+    assert!(premiums.len() >= 21);
     for c in premiums {
         let got = premium(&readings(&c["readings"]), c["now"].as_i64().unwrap());
         assert_eq!(got.map(u64::from), c["premium"].as_u64(), "{}", c["name"]);

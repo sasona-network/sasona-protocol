@@ -8,6 +8,7 @@
    "readings": [
     {
      "id": "aa",
+     "key": "A",
      "revealed_slot": 1000000,
      "committed_slot": 999990,
      "revealed_time": 8553600,
@@ -26,6 +27,7 @@
    "readings": [
     {
      "id": "aa",
+     "key": "A",
      "revealed_slot": 1000000,
      "committed_slot": 999990,
      "revealed_time": 8553600,
@@ -44,6 +46,7 @@
    "readings": [
     {
      "id": "aa",
+     "key": "A",
      "revealed_slot": 1000000,
      "committed_slot": 999990,
      "revealed_time": 8553600,
@@ -62,6 +65,7 @@
    "readings": [
     {
      "id": "aa",
+     "key": "A",
      "revealed_slot": 1000000,
      "committed_slot": 999990,
      "revealed_time": 8553600,
@@ -80,6 +84,7 @@
    "readings": [
     {
      "id": "aa",
+     "key": "A",
      "revealed_slot": 1000000,
      "committed_slot": 999990,
      "revealed_time": 8553600,
@@ -98,6 +103,7 @@
    "readings": [
     {
      "id": "aa",
+     "key": "A",
      "revealed_slot": 1000000,
      "committed_slot": 999990,
      "revealed_time": 8553600,
@@ -116,6 +122,7 @@
    "readings": [
     {
      "id": "aa",
+     "key": "A",
      "revealed_slot": 1000000,
      "committed_slot": 999990,
      "revealed_time": 8553600,
@@ -129,11 +136,12 @@
    "premium": null
   },
   {
-   "name": "the current reading says wrong answer",
+   "name": "the only reading says wrong answer",
    "now": 8640000,
    "readings": [
     {
      "id": "aa",
+     "key": "A",
      "revealed_slot": 1000000,
      "committed_slot": 999990,
      "revealed_time": 8553600,
@@ -147,11 +155,12 @@
    "premium": null
   },
   {
-   "name": "the current reading says empty",
+   "name": "the only reading says empty",
    "now": 8640000,
    "readings": [
     {
      "id": "aa",
+     "key": "A",
      "revealed_slot": 1000000,
      "committed_slot": 999990,
      "revealed_time": 8553600,
@@ -170,6 +179,7 @@
    "readings": [
     {
      "id": "aa",
+     "key": "A",
      "revealed_slot": 1000000,
      "committed_slot": 999990,
      "revealed_time": 6048000,
@@ -188,6 +198,7 @@
    "readings": [
     {
      "id": "aa",
+     "key": "A",
      "revealed_slot": 1000000,
      "committed_slot": 999990,
      "revealed_time": 6047999,
@@ -206,6 +217,7 @@
    "readings": [
     {
      "id": "aa",
+     "key": "A",
      "revealed_slot": 1000000,
      "committed_slot": 999990,
      "revealed_time": 8640001,
@@ -224,6 +236,7 @@
    "readings": [
     {
      "id": "aa",
+     "key": "A",
      "revealed_slot": 1000000,
      "committed_slot": 999990,
      "revealed_time": 8553600,
@@ -237,24 +250,112 @@
    "premium": null
   },
   {
-   "name": "a newer reading that failed replaces a cheap old one",
+   "name": "the lowest of several standing quotes",
    "now": 8640000,
    "readings": [
     {
      "id": "aa",
+     "key": "A",
      "revealed_slot": 1000000,
      "committed_slot": 999990,
-     "revealed_time": 7776000,
+     "revealed_time": 7862400,
      "counts": true,
      "verdict": 1,
      "member_active": true,
-     "quote": 5,
+     "quote": 300,
      "quote_by_reader": true
     },
     {
      "id": "bb",
-     "revealed_slot": 1000500,
-     "committed_slot": 1000490,
+     "key": "B",
+     "revealed_slot": 1000005,
+     "committed_slot": 999995,
+     "revealed_time": 8208000,
+     "counts": true,
+     "verdict": 1,
+     "member_active": true,
+     "quote": 80,
+     "quote_by_reader": true
+    },
+    {
+     "id": "cc",
+     "key": "A",
+     "revealed_slot": 1000009,
+     "committed_slot": 999999,
+     "revealed_time": 8553600,
+     "counts": true,
+     "verdict": 1,
+     "member_active": true,
+     "quote": 200,
+     "quote_by_reader": true
+    }
+   ],
+   "premium": 80
+  },
+  {
+   "name": "one newer failing reading does not take a service off the list",
+   "now": 8640000,
+   "readings": [
+    {
+     "id": "aa",
+     "key": "A",
+     "revealed_slot": 1000000,
+     "committed_slot": 999990,
+     "revealed_time": 7862400,
+     "counts": true,
+     "verdict": 1,
+     "member_active": true,
+     "quote": 50,
+     "quote_by_reader": true
+    },
+    {
+     "id": "bb",
+     "key": "B",
+     "revealed_slot": 1000009,
+     "committed_slot": 999999,
+     "revealed_time": 8467200,
+     "counts": true,
+     "verdict": 2,
+     "member_active": true,
+     "quote": 0,
+     "quote_by_reader": true
+    }
+   ],
+   "premium": 50
+  },
+  {
+   "name": "two latest readings failed, from two keys: failing",
+   "now": 8640000,
+   "readings": [
+    {
+     "id": "aa",
+     "key": "A",
+     "revealed_slot": 1000000,
+     "committed_slot": 999990,
+     "revealed_time": 7862400,
+     "counts": true,
+     "verdict": 1,
+     "member_active": true,
+     "quote": 50,
+     "quote_by_reader": true
+    },
+    {
+     "id": "bb",
+     "key": "B",
+     "revealed_slot": 1000005,
+     "committed_slot": 999995,
+     "revealed_time": 8380800,
+     "counts": true,
+     "verdict": 2,
+     "member_active": true,
+     "quote": 0,
+     "quote_by_reader": true
+    },
+    {
+     "id": "cc",
+     "key": "C",
+     "revealed_slot": 1000009,
+     "committed_slot": 999999,
      "revealed_time": 8467200,
      "counts": true,
      "verdict": 2,
@@ -266,43 +367,15 @@
    "premium": null
   },
   {
-   "name": "a newer reading's own quote is the one that counts",
+   "name": "two latest readings failed, from one key: not failing",
    "now": 8640000,
    "readings": [
     {
      "id": "aa",
+     "key": "A",
      "revealed_slot": 1000000,
      "committed_slot": 999990,
-     "revealed_time": 7776000,
-     "counts": true,
-     "verdict": 1,
-     "member_active": true,
-     "quote": 5,
-     "quote_by_reader": true
-    },
-    {
-     "id": "bb",
-     "revealed_slot": 1000500,
-     "committed_slot": 1000490,
-     "revealed_time": 8467200,
-     "counts": true,
-     "verdict": 1,
-     "member_active": true,
-     "quote": 400,
-     "quote_by_reader": true
-    }
-   ],
-   "premium": 400
-  },
-  {
-   "name": "a newer reading upheld false does not replace the old one",
-   "now": 8640000,
-   "readings": [
-    {
-     "id": "aa",
-     "revealed_slot": 1000000,
-     "committed_slot": 999990,
-     "revealed_time": 7776000,
+     "revealed_time": 7862400,
      "counts": true,
      "verdict": 1,
      "member_active": true,
@@ -311,56 +384,115 @@
     },
     {
      "id": "bb",
-     "revealed_slot": 1000500,
-     "committed_slot": 1000490,
-     "revealed_time": 8467200,
-     "counts": false,
-     "verdict": 1,
+     "key": "B",
+     "revealed_slot": 1000005,
+     "committed_slot": 999995,
+     "revealed_time": 8380800,
+     "counts": true,
+     "verdict": 2,
      "member_active": true,
-     "quote": 5,
+     "quote": 0,
+     "quote_by_reader": true
+    },
+    {
+     "id": "cc",
+     "key": "B",
+     "revealed_slot": 1000009,
+     "committed_slot": 999999,
+     "revealed_time": 8467200,
+     "counts": true,
+     "verdict": 2,
+     "member_active": true,
+     "quote": 0,
      "quote_by_reader": true
     }
    ],
    "premium": 50
   },
   {
-   "name": "revealed in the same slot: the one committed earliest is current",
+   "name": "a delivering reading between two failures: not failing",
    "now": 8640000,
    "readings": [
     {
      "id": "aa",
+     "key": "B",
      "revealed_slot": 1000000,
-     "committed_slot": 999997,
-     "revealed_time": 8553600,
+     "committed_slot": 999990,
+     "revealed_time": 7862400,
      "counts": true,
-     "verdict": 1,
+     "verdict": 2,
      "member_active": true,
-     "quote": 50,
+     "quote": 0,
      "quote_by_reader": true
     },
     {
      "id": "bb",
-     "revealed_slot": 1000000,
-     "committed_slot": 999991,
-     "revealed_time": 8553600,
+     "key": "A",
+     "revealed_slot": 1000005,
+     "committed_slot": 999995,
+     "revealed_time": 8208000,
      "counts": true,
      "verdict": 1,
      "member_active": true,
      "quote": 70,
+     "quote_by_reader": true
+    },
+    {
+     "id": "cc",
+     "key": "C",
+     "revealed_slot": 1000009,
+     "committed_slot": 999999,
+     "revealed_time": 8467200,
+     "counts": true,
+     "verdict": 2,
+     "member_active": true,
+     "quote": 0,
      "quote_by_reader": true
     }
    ],
    "premium": 70
   },
   {
-   "name": "same slot and commit: the smaller identifier is current",
+   "name": "a newer reading with no quote leaves the older quote standing",
    "now": 8640000,
    "readings": [
     {
-     "id": "bb",
+     "id": "aa",
+     "key": "A",
      "revealed_slot": 1000000,
      "committed_slot": 999990,
-     "revealed_time": 8553600,
+     "revealed_time": 7862400,
+     "counts": true,
+     "verdict": 1,
+     "member_active": true,
+     "quote": 60,
+     "quote_by_reader": true
+    },
+    {
+     "id": "bb",
+     "key": "B",
+     "revealed_slot": 1000009,
+     "committed_slot": 999999,
+     "revealed_time": 8467200,
+     "counts": true,
+     "verdict": 1,
+     "member_active": true,
+     "quote": 0,
+     "quote_by_reader": true
+    }
+   ],
+   "premium": 60
+  },
+  {
+   "name": "a reading upheld false does not count towards failing",
+   "now": 8640000,
+   "readings": [
+    {
+     "id": "aa",
+     "key": "A",
+     "revealed_slot": 1000000,
+     "committed_slot": 999990,
+     "revealed_time": 7862400,
      "counts": true,
      "verdict": 1,
      "member_active": true,
@@ -368,7 +500,51 @@
      "quote_by_reader": true
     },
     {
+     "id": "bb",
+     "key": "B",
+     "revealed_slot": 1000005,
+     "committed_slot": 999995,
+     "revealed_time": 8380800,
+     "counts": true,
+     "verdict": 2,
+     "member_active": true,
+     "quote": 0,
+     "quote_by_reader": true
+    },
+    {
+     "id": "cc",
+     "key": "C",
+     "revealed_slot": 1000009,
+     "committed_slot": 999999,
+     "revealed_time": 8467200,
+     "counts": false,
+     "verdict": 2,
+     "member_active": true,
+     "quote": 0,
+     "quote_by_reader": true
+    }
+   ],
+   "premium": 50
+  },
+  {
+   "name": "the same rate twice: either way the premium",
+   "now": 8640000,
+   "readings": [
+    {
+     "id": "bb",
+     "key": "A",
+     "revealed_slot": 1000000,
+     "committed_slot": 999990,
+     "revealed_time": 8553600,
+     "counts": true,
+     "verdict": 1,
+     "member_active": true,
+     "quote": 70,
+     "quote_by_reader": true
+    },
+    {
      "id": "aa",
+     "key": "A",
      "revealed_slot": 1000000,
      "committed_slot": 999990,
      "revealed_time": 8553600,
@@ -390,6 +566,7 @@
     "https://a.example/x": [
      {
       "id": "01",
+      "key": "A",
       "revealed_slot": 1000000,
       "committed_slot": 999990,
       "revealed_time": 8553600,
@@ -403,6 +580,7 @@
     "https://b.example/x": [
      {
       "id": "02",
+      "key": "A",
       "revealed_slot": 1000000,
       "committed_slot": 999990,
       "revealed_time": 8553600,
@@ -416,6 +594,7 @@
     "https://c.example/x": [
      {
       "id": "03",
+      "key": "A",
       "revealed_slot": 1000000,
       "committed_slot": 999990,
       "revealed_time": 8553600,
@@ -443,12 +622,13 @@
    ]
   },
   {
-   "name": "a service whose current reading failed is not listed",
+   "name": "a failing service is not listed",
    "now": 8640000,
    "services": {
     "https://a.example/x": [
      {
       "id": "01",
+      "key": "A",
       "revealed_slot": 1000000,
       "committed_slot": 999990,
       "revealed_time": 7862400,
@@ -460,6 +640,19 @@
      },
      {
       "id": "04",
+      "key": "B",
+      "revealed_slot": 1000005,
+      "committed_slot": 999995,
+      "revealed_time": 8380800,
+      "counts": true,
+      "verdict": 2,
+      "member_active": true,
+      "quote": 0,
+      "quote_by_reader": true
+     },
+     {
+      "id": "05",
+      "key": "C",
       "revealed_slot": 1000009,
       "committed_slot": 999999,
       "revealed_time": 8553600,
@@ -473,6 +666,7 @@
     "https://b.example/x": [
      {
       "id": "02",
+      "key": "A",
       "revealed_slot": 1000000,
       "committed_slot": 999990,
       "revealed_time": 8553600,
@@ -498,6 +692,7 @@
     "https://a.example/x": [
      {
       "id": "01",
+      "key": "A",
       "revealed_slot": 1000000,
       "committed_slot": 999990,
       "revealed_time": 8553600,
@@ -511,6 +706,7 @@
     "https://b.example/x": [
      {
       "id": "02",
+      "key": "A",
       "revealed_slot": 1000001,
       "committed_slot": 999991,
       "revealed_time": 8553600,
@@ -540,6 +736,7 @@
     "https://a.example/x": [
      {
       "id": "f0",
+      "key": "A",
       "revealed_slot": 1000000,
       "committed_slot": 999990,
       "revealed_time": 8553600,
@@ -553,6 +750,7 @@
     "https://b.example/x": [
      {
       "id": "0f",
+      "key": "A",
       "revealed_slot": 1000000,
       "committed_slot": 999990,
       "revealed_time": 8553600,
@@ -582,6 +780,7 @@
     "https://a.example/x": [
      {
       "id": "01",
+      "key": "A",
       "revealed_slot": 1000000,
       "committed_slot": 999990,
       "revealed_time": 8553600,

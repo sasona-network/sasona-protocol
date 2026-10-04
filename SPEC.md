@@ -430,26 +430,33 @@ The program refuses a rate unless the reading was revealed, says `delivered`, wa
 
 Each change is recorded on chain, with its slot and time, in the event the program emits. The quote's account holds only the latest rate.
 
-### 6.2 The current reading
+### 6.2 Which readings count for a service
 
-A service's **current reading**, at the moment the ranking is read, is its latest reading that counts (2.7), ordered as in 3.2: revealed in the latest slot, then committed earliest, then the smaller identifier. A newer reading replaces an older one whatever it says. If it says the service failed, the older quote stops counting the moment it is revealed, without anyone saying the older reading was false (3.3).
+At the moment the ranking is read, a service's readings are those that count (2.7) and were revealed by then, ordered as in 3.2: revealed in the latest slot first, then committed earliest, then the smaller identifier.
+
+A quote on one of them **stands** if its reading says `delivered`, is no more than 30 days old at that moment, and has a rate from 1 to 10,000 set by its member, whose membership is still active.
+
+A service is **failing** if its two latest readings both say it did not deliver, and were taken by different keys. One failing reading is not enough. A reader can make a failing reply up as easily as anything else, and it costs them nothing (5.4), so one reader alone cannot take a service off the list. Two, from two keys, say it more firmly, whether the service failed from the start or stopped working since (3.3).
 
 ### 6.3 The ranking
 
 At the moment it is read:
 
-1. a service is **listed** if its current reading says `delivered`, is no more than 30 days old, and carries a quote that stands: a rate from 1 to 10,000, set by the reading's member, whose membership is still active
-2. its **premium** is that rate
+1. a service is **listed** if it is not failing and at least one quote on its readings stands
+2. its **premium** is the lowest rate among those quotes. If several share it, the one that counts is on the latest reading, as 6.2 orders them
 3. listed services are ranked from the lowest premium to the highest
-4. services with the same premium are ranked by their current readings, as 6.2 orders them: the latest first
+4. services with the same premium are ranked by the reading behind their premium, the latest first
 5. services that are not listed are not ranked
+
+So the lowest price any member still stands behind is the price. A member who stops quoting, leaves, or reads the service as failed does not take it off the list while another member's quote stands. The member whose quote is the premium is the one who carries the risk when purchases are covered (parts 7 and 8), so a quote that is too low costs whoever gave it, and a member who has changed their mind raises it or withdraws it.
 
 The ranking is of the moment it is read. The chain keeps each quote's latest rate, and a membership's and a reading's present state, so a ranking for a moment in the past is rebuilt from the program's events, not from accounts.
 
 ### 6.4 What a quote does and does not prove
 
 - **Until purchases are on chain, a quote costs nothing to give.** The ranking is what members say they would charge, not yet what they have to pay. Premiums are collected with purchases (part 8), and claims paid from stakes with chargebacks (part 7). That is what makes a low quote expensive to give falsely. A member can also withdraw a quote and set it again when it suits them, and nothing here sees it.
-- **Being the reader is not expensive.** Anyone can open a round with a list of their choosing. A service's operator holding several memberships can open rounds that list only their own service until one of their memberships is drawn, then read it as delivered and quote it cheaply. What limits this is that any later reading that counts replaces theirs (6.2), and anyone can open a round to get one. Which services go into lists is not specified yet (section 7), and until it is, a ranking is only as good as the readings behind it.
+- **Being the reader is not expensive.** Anyone can open a round with a list of their choosing, and an operator holding several memberships can open rounds that list only their own service until one of their memberships is drawn, then quote it cheaply. Nothing here stops that price from being the premium. Once purchases are covered at it (parts 7 and 8), it is what they pay out at. The same works the other way, more weakly: to take a rival off the list takes two failing readings from two keys, which one person holding two memberships can still arrange. Which services go into lists is not specified yet (section 7), and until it is, a ranking is only as good as the readings behind it.
+- **A failing service can stay listed** after one honest reading finds it failing, at a quote set before, until a second reading from another key agrees or its quote runs out. The member who set that quote is the one exposed while it stands.
 - **The stake does not grow with the quote.** Every membership has the same stake, whatever it insures. 4.5 says when that changes.
 
 ### 6.5 Checking a ranking
@@ -458,8 +465,9 @@ Whoever ranks needs, besides the program's accounts: each round's published list
 
 | Check | If it fails |
 |---|---|
-| each service's current reading is its latest reading that counts, as 6.2 orders them | an older, kinder reading was used |
-| that reading says `delivered`, is no more than 30 days old, and its member is active | a service that failed, or a stale price, was listed |
+| the readings weighed are those that count, revealed by the moment of the ranking | a reading that does not count moved the price |
+| each premium is the lowest quote that stands, as 6.2 says | a higher price was shown, or a stale one used |
+| no service ranked has two latest readings that failed, from two keys | a failing service was listed |
 | the quote was set by the key that took the reading | someone else priced a reading they did not take |
 | the order follows 6.3 | the services were reordered |
 
