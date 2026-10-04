@@ -1,6 +1,8 @@
 # Sasona protocol
 
-**Version 0.1.0.** This version specifies one thing: the draw.
+**Version 0.2.0.** This version specifies one thing: the draw.
+
+0.2.0 adds that a list can be drawn once (1.3, 1.8) and states two limits more plainly (1.7). Every value 0.1.0 computes is unchanged, so its test values still hold.
 
 The words **MUST** and **MUST NOT** mark rules that change a result. An implementation that does otherwise computes different values from every other one and is not conformant.
 
@@ -62,6 +64,8 @@ The party opening a round picks 32 random bytes, the **seed**, and commits on ch
 
 The count has to be fixed here. A draw is a prefix of every longer draw (1.6), so an opener who could choose the count after seeing the order could stop just before a service they did not want.
 
+**A list is drawn once.** The round's address on chain is derived from the pool fingerprint alone, so only one round can ever exist for a given list in a given order, whoever opens it. Otherwise an opener could open several rounds for the same list with different seeds, reveal them all, and keep whichever result they liked. A verifier **MUST** take the round at the address derived from the list's fingerprint, and no other.
+
 ### 1.4 Outside entropy
 
 The round is committed at a Solana slot, `commit_slot`. Its **target slot** is `commit_slot + 32`, a slot that did not exist when the round was committed. Solana can skip a slot, so the **entropy slot** is the earliest slot at or after the target slot that appears in the `SlotHashes` sysvar, and the **entropy** is the 32 bytes stored there for it, exactly as stored.
@@ -116,7 +120,8 @@ Drawing `n` gives the first `n` of drawing `m > n`.
 - **Each attempt** picks every host with the same chance, so a host with thousands of listings is no likelier to be drawn on a given attempt than a host with one. Over several picks this does not hold: a host with one endpoint can be picked once, and later attempts that land on it are skipped.
 - The host rules in 1.1 stop one service posing as several hosts through its spelling. They do not stop whoever builds the list from listing one business under many domains. What goes on a list is outside this version.
 - The opener commits before the entropy exists, so they cannot aim the seed. After the entropy slot, they can compute the result before revealing and choose not to. That costs them the round's bond (see the program) and is recorded as withheld, but it is a choice they still have.
-- Whoever produces the entropy slot does not know the seed. An opener colluding with that producer could try several blocks; this version does not defend against that.
+- Whoever produces the entropy slot does not know the seed, unless they are the opener or work with the opener. Solana publishes which validator produces each slot an epoch ahead, so a validator can open a round timed for the target slot to land in their own run of slots. They can then try different contents for that block, or skip it so the entropy moves to a later slot they also produce. This version does not defend against an opener who is, or is working with, the validator producing the target slot.
+- Reordering the same services gives a new fingerprint and so a new round. An opener who dislikes a result can withhold it, losing the bond, and open the list again in another order. The bond is what that costs.
 - Reducing a 256-bit number modulo the list's size leaves a bias below 2^-200. It is ignored.
 
 ### 1.8 Checking a draw
@@ -128,6 +133,7 @@ A verifier **MUST** check each of these, and **MUST** report them as separate fa
 | `sha256(seed)` equals the committed seed hash | the seed was swapped |
 | the list has as many candidates as committed | candidates were added or removed |
 | the list's fingerprint equals the committed fingerprint | the list was swapped or reordered |
+| the round is the one at the address derived from that fingerprint | the round was one of several, and the others were hidden |
 | the list follows 1.1 | the list is malformed |
 | the count drawn equals the committed count | the count was chosen afterwards |
 | the recomputed picks equal the claimed picks | the result was forged |

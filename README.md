@@ -8,7 +8,7 @@ A member's software and ours have to reach the same answer from the same inputs:
 
 | Version | What it covers |
 |---|---|
-| [0.1.0](SPEC.md) | The draw: how a round's seed and its list of services decide which services get tested, so anyone can re-run it |
+| [0.2.0](SPEC.md) | The draw: how a round's seed and its list of services decide which services get tested, so anyone can re-run it, and why a list can be drawn only once |
 
 ## Check an implementation
 
