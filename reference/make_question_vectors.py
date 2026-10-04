@@ -38,6 +38,8 @@ def main():
         ("the answer broken by a newline", e[:8] + b"\n" + e[8:]),
         ("fifteen of the sixteen characters", e[:15]),
         ("nothing", b""),
+        ("the answer inside the first 10,000 bytes", b"x" * 9_984 + e + b"y" * 100),
+        ("the answer only after the first 10,000 bytes", b"x" * 10_000 + e),
     ]
     verdicts = [
         {"name": name, "reply_hex": r.hex(), "reply_hash": q.reply_hash(r).hex(),
@@ -72,7 +74,7 @@ def main():
     assert q.is_fair(fair.encode())
 
     out = {
-        "version": "0.3.0",
+        "version": "0.5.0",
         "questions": cases,
         "bad_nonces": [{"why": w, "nonce": n} for w, n in BAD_NONCES],
         "verdicts": {"nonce": n0, "replies": verdicts},

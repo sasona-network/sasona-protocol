@@ -6,26 +6,24 @@ import hmac
 MAX_ATTEMPTS = 16
 
 
-def n(final: bytes, service: str, attempt: int, members: int) -> int:
-    """The membership drawn at this attempt, numbered from 1."""
+def s(final: bytes, service: str, attempt: int, members: int) -> int:
+    """The seat drawn at this attempt, numbered from 1, out of the round's M."""
     message = b"reader" + hashlib.sha256(service.encode("ascii")).digest() + attempt.to_bytes(4, "big")
     digest = hmac.new(final, message, hashlib.sha256).digest()
     return 1 + int.from_bytes(digest, "big") % members
 
 
-def reader(final: bytes, service: str, memberships: list, first_reader=None):
-    """The membership that reads `service`, or None.
+def reader(final: bytes, service: str, members: int, seats: list, first_reader=None):
+    """The seat whose membership reads `service`, or None.
 
-    `memberships` is the round's roster, in order: membership k is
-    memberships[k - 1], a dict with "key" and "active" (at the reading's
-    commit). `first_reader` is the key that took the first reading, for a
-    second reading."""
-    members = len(memberships)
+    `members` is M, recorded when the round was committed. `seats` is the
+    roster when the reading is committed: seats[k - 1] is the key holding the
+    membership in seat k, and len(seats) is A. `first_reader` is the key that
+    took the first reading, for a second reading."""
     if members == 0:
         return None
     for attempt in range(MAX_ATTEMPTS):
-        k = n(final, service, attempt, members)
-        m = memberships[k - 1]
-        if m["active"] and m["key"] != first_reader:
+        k = s(final, service, attempt, members)
+        if k <= len(seats) and seats[k - 1] != first_reader:
             return k
     return None

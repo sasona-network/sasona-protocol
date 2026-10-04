@@ -56,12 +56,21 @@ def is_fair(shown: bytes) -> bool:
         return False
 
 
-def reply_hash(reply: bytes) -> bytes:
-    return hashlib.sha256(reply).digest()
+MAX_REPLY_BYTES = 10_000
 
 
-def verdict(reply: bytes, nonce: str) -> int:
+def recorded(received: bytes) -> bytes:
+    """SPEC.md 2.4: the reply is the first 10,000 bytes of what came back."""
+    return received[:MAX_REPLY_BYTES]
+
+
+def reply_hash(received: bytes) -> bytes:
+    return hashlib.sha256(recorded(received)).digest()
+
+
+def verdict(received: bytes, nonce: str) -> int:
     """SPEC.md 2.4."""
+    reply = recorded(received)
     if not reply:
         return EMPTY
     return DELIVERED if expected(nonce).encode("ascii") in reply else WRONG_ANSWER

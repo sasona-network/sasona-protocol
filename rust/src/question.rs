@@ -59,15 +59,23 @@ pub fn question_hash(nonce: &str) -> Option<[u8; 32]> {
     canonical_question(nonce).map(|j| Sha256::digest(j.as_bytes()).into())
 }
 
-pub fn reply_hash(reply: &[u8]) -> [u8; 32] {
-    Sha256::digest(reply).into()
+/// 2.4: the reply is at most the first 10,000 bytes of what came back.
+pub const MAX_REPLY_BYTES: usize = 10_000;
+
+pub fn recorded(received: &[u8]) -> &[u8] {
+    &received[..received.len().min(MAX_REPLY_BYTES)]
+}
+
+pub fn reply_hash(received: &[u8]) -> [u8; 32] {
+    Sha256::digest(recorded(received)).into()
 }
 
 /// 2.4, for the reading's nonce. None if the nonce is not valid.
-pub fn verdict(reply: &[u8], nonce: &str) -> Option<u8> {
+pub fn verdict(received: &[u8], nonce: &str) -> Option<u8> {
     if !valid_nonce(nonce) {
         return None;
     }
+    let reply = recorded(received);
     if reply.is_empty() {
         return Some(EMPTY);
     }

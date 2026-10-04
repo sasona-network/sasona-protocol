@@ -2,7 +2,7 @@
 
 **Version 0.5.0.** This version specifies the draw (section 1), the committed question (section 2), second readings (section 3), members (section 4) and challenges (section 5).
 
-0.5.0 adds sections 4 and 5. 0.4.0 added section 3. 0.3.0 added section 2. 0.2.0 added that a list can be drawn once (1.3, 1.8) and stated two limits more plainly (1.7). Every value 0.1.0 computes is unchanged.
+0.5.0 adds sections 4 and 5, and limits a reply to its first 10,000 bytes (2.4); no reading so far had a reply that long. 0.4.0 added section 3. 0.3.0 added section 2. 0.2.0 added that a list can be drawn once (1.3, 1.8) and stated two limits more plainly (1.7). Every value 0.1.0 computes is unchanged.
 
 The words **MUST** and **MUST NOT** mark rules that change a result. An implementation that does otherwise computes different values from every other one and is not conformant.
 
@@ -196,7 +196,9 @@ This is not a general JSON encoding. It is the one byte sequence 2.1 and 2.2 pro
 
 ### 2.4 The reply and the verdict
 
-The reply is the bytes the service returned, exactly as received. Its **reply hash** is `sha256` of those bytes.
+The reply is the bytes the service returned, exactly as received, up to the first 10,000. Bytes after those are not part of the reply. Its **reply hash** is `sha256` of the reply.
+
+The limit is what a member can put on chain in answer to a challenge (section 5). A reply cut at 10,000 bytes is judged on what it keeps, so an answer that only appears later is not found. The challenge's program prints 16 characters, so a service that delivers does not need more.
 
 | Verdict | Code | When |
 |---|---|---|
@@ -305,57 +307,69 @@ A member is someone with a stake locked in the network. Readings are taken by me
 
 ### 4.1 Memberships
 
-A **membership** is one stake of a fixed size, locked in coin. Memberships are numbered from 1, in the order they were taken.
+A **membership** is one stake of a fixed size, locked in coin. Memberships are numbered from 1 in the order they were taken, and a number is never reused. Readings and challenges name memberships by this number.
 
 One key may hold several. Every draw below is over memberships, so a key with three has three chances, and it locked three stakes to get them. Splitting the same coins over more keys buys nothing.
 
-A membership is **active** from when it is taken until it asks to leave or loses its stake. Only an active membership can be drawn to read.
+### 4.2 The roster
 
-### 4.2 A round's roster
+The **roster** is the memberships that can be drawn, in seats numbered from 1 to **A**, with no gaps:
 
-When a round is committed, the program records **M**, the number of memberships taken so far. The round's roster is memberships 1 to M. A membership taken later does not exist for that round.
+- a membership that is taken sits in seat `A + 1`
+- a membership that asks to leave, or loses its stake, leaves its seat at once. The membership in the last seat moves into it, and the roster is one shorter
+
+So every seat holds an active membership, and nothing that has left stays on the roster to be drawn and passed over.
+
+When a round is committed, the program records **M**, the number of seats then.
 
 ### 4.3 Drawing the reader
 
 For a service `S` of a drawn round:
 
 ```
-n(a) = 1 + ( int( HMAC-SHA256( key = final_seed,
+s(a) = 1 + ( int( HMAC-SHA256( key = final_seed,
                                message = "reader" || sha256(S) || u32_be(a) ),
                   big-endian over all 32 bytes ) mod M )
 ```
 
-for attempts `a = 0, 1, 2, ...`. The reader is the first `n(a)` that is active when the reading is committed and, for a second reading, is not held by the key that took the first reading. At most 16 attempts are made. If none of them qualifies, nobody reads `S` in this round.
+for attempts `a = 0, 1, 2, ...`. When the reading is committed, the reader is the membership in seat `s(a)` for the first attempt where:
+
+- seat `s(a)` exists now, that is `s(a) <= A`. The roster can be shorter than it was when the round was committed
+- for a second reading, the membership in it is not held by the key that took the first reading
+
+At most 16 attempts are made. If none qualifies, nobody reads `S` in this round.
 
 - the key is the round's **final seed** (1.5), the same seed its picks were drawn with
 - the label is the ASCII bytes `reader`, then the 32 bytes of `sha256(S)`, then the attempt as 4 bytes, big-endian
-- a membership drawn again is skipped again; nothing is removed
 - a round with `M = 0` has no readers
+
+The program **MUST** refuse a reading committed by anyone other than the key holding the membership drawn for it. Whoever commits shows the seats passed over that exist, so the program can check each one.
+
+A reading **MUST** be committed within 9,000 slots, about an hour, of the slot the round's entropy came from (1.4). A service its drawn member has not committed to by then goes unread in this round, in public: its reading is missing.
 
 Readings taken before version 0.5.0 have no membership. Their round's opener took them.
 
-The program **MUST** refuse a reading committed by anyone other than the key holding the membership drawn for it. Whoever commits shows the memberships skipped before theirs, so the program can check each one was not active.
-
 ### 4.4 Leaving
 
-A membership asks to leave, and stops being active at once. Its stake comes back after 45 days' notice. The notice is longer than the time it takes to find a false reading, so a member cannot read, lie and leave before it is found. A membership with an open challenge (section 5) cannot leave until it is settled.
+A membership asks to leave, and leaves its seat at once. Its stake comes back after 45 days' notice. A reading can be challenged for 30 days after it is revealed, and a challenge answered for 7 more (section 5), so the notice outlasts every challenge a member's readings can get. A membership with an open challenge cannot take its stake back until the challenge is settled.
 
 ### 4.5 What membership does and does not prove
 
 - **A membership is a stake, not a person.** Two memberships can be one person, and nothing here can tell.
 - **The stake is the same for everyone.** A stake that deters has to grow with what a false reading would be worth, which is the traffic a service carries. That needs prices on chain (part 6).
-- **The opener still writes the list,** and chooses when to open it. The opener no longer chooses who reads.
+- **Who reads is drawn, but a drawn member can decline,** by not committing. The service then goes unread in that round, and the record shows it. A member who leaves after being drawn hands the seat, and the reading, to whoever sat last.
+- **The opener writes the list and chooses when to open it.** As 1.7 says of the picks, an opener can also withhold a round after seeing the draw, which now includes its readers.
 
 ## 5. Challenges
 
 ### 5.1 What a challenge asks
 
-Anyone may challenge a revealed reading taken by a member, once, for a bond of 0.1 SOL. The challenge asks the member to show what they recorded:
+Anyone may challenge a reading taken by a member, once, within 30 days of its reveal, for a bond of 0.1 SOL. The challenge asks the member to show what they recorded:
 
 - the nonce
-- the reply, in full, at most 10,240 bytes
+- the reply, in full, at most 10,000 bytes (2.4)
 
-They have 216,000 slots, about a day, to put both on chain.
+They have 7 days to put both on chain.
 
 ### 5.2 The answer
 
@@ -365,36 +379,37 @@ The answer holds if:
 - `sha256(reply)` is the reply hash the reading recorded
 - the verdict rule (2.4) on the reply, for this nonce, gives the verdict the reading recorded
 
-If it holds, the challenger's bond goes to the member, who paid to publish. The reply is now public, which is what makes the next section possible.
+If it holds, the challenger's bond goes to the member, who paid to publish. The reply stays on chain and can no longer be changed.
 
 ### 5.3 A challenge upheld
 
 If no answer holds by the deadline, anyone may uphold the challenge. Then:
 
-- the membership loses its whole stake and stops being active
 - the reading no longer counts
+- the membership loses its whole stake, and its seat if it still has one
 - the challenger gets the bond back, and a tenth of the stake
 - the rest of the stake is held to pay back buyers of purchases made on false readings
 
 If the stake has already come back to the member, the reading still stops counting.
 
-> **Temporary.** Until chargebacks are on chain (part 7), the held stake cannot leave. Where it goes is decided there.
+> **Temporary.** Until chargebacks are on chain (part 7), the held stake cannot leave. Where it goes is decided there. The stake, the bond and the challenger's tenth are devnet figures: at these numbers a challenge can cost more than it wins. They are set together, from what readings are worth, once prices are on chain (part 6).
 
 ### 5.4 What a challenge does and does not prove
 
 - **It catches a member who cannot back their own record.** A verdict that does not follow from the reply, a reply hash that was never a reply, a reply that was not kept.
 - **It does not catch a reply made up well.** A member knows the nonce, so they can write a reply that passes, and it will. 2.6 still holds. What catches that is a buyer's chargeback, which replays the purchase (part 7), and later a web proof of the reply.
 - **A service that stopped working is not a false reading.** Nothing in this section looks at the service again. A `false_or_decayed` pair (3.3) is never, by itself, grounds to take a stake.
+- **A reading can be challenged once.** A challenge that is answered settles the record for good, including when the challenger was the member's friend. All it settles is that the record agrees with itself.
 
 ### 5.5 Checking a challenge
 
 | Check | If it fails |
 |---|---|
-| the reading was revealed, and taken by a member | there is nothing to challenge |
+| the reading was revealed, by a member, no more than 30 days before the challenge | there is nothing to challenge |
 | the answer's nonce record names the reading | the nonce is someone else's |
 | `sha256(reply)` equals the recorded reply hash | the reply shown is not the one recorded |
 | the verdict rule on the reply gives the recorded verdict | the verdict was misreported |
-| an upheld challenge had no answer that held before its deadline | the stake was taken from a member who had answered |
+| an upheld challenge had no answer that held within its 7 days | the stake was taken from a member who had answered |
 
 ## 6. What this version does not specify
 

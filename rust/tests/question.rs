@@ -33,7 +33,7 @@ fn verdicts() {
     let v = vectors();
     let nonce = v["verdicts"]["nonce"].as_str().unwrap();
     let replies = v["verdicts"]["replies"].as_array().unwrap();
-    assert!(replies.len() >= 11);
+    assert!(replies.len() >= 13);
     for r in replies {
         let reply = hex::decode(r["reply_hex"].as_str().unwrap()).unwrap();
         assert_eq!(hex::encode(reply_hash(&reply)), r["reply_hash"].as_str().unwrap());

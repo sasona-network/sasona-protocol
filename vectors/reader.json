@@ -3,14 +3,12 @@
  "max_attempts": 16,
  "cases": [
   {
-   "name": "one membership",
+   "name": "one seat",
    "final_seed": "7692c3ad3540bb803c020b3aee66cd8887123234ea0c6e7143c0add73ff431ed",
    "service": "https://sandbox.example.net/run/python",
-   "memberships": [
-    {
-     "key": "A",
-     "active": true
-    }
+   "members": 1,
+   "seats": [
+    "A"
    ],
    "first_reader": null,
    "attempts": [
@@ -34,30 +32,16 @@
    "reader": 1
   },
   {
-   "name": "five memberships",
+   "name": "five seats",
    "final_seed": "222b0bd51fcef7e65c2e62db2ed65457013bab56be6fafeb19ee11d453153c80",
    "service": "https://sandbox.example.net/run/python",
-   "memberships": [
-    {
-     "key": "A",
-     "active": true
-    },
-    {
-     "key": "B",
-     "active": true
-    },
-    {
-     "key": "C",
-     "active": true
-    },
-    {
-     "key": "D",
-     "active": true
-    },
-    {
-     "key": "E",
-     "active": true
-    }
+   "members": 5,
+   "seats": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E"
    ],
    "first_reader": null,
    "attempts": [
@@ -84,27 +68,13 @@
    "name": "another service, the same seed",
    "final_seed": "222b0bd51fcef7e65c2e62db2ed65457013bab56be6fafeb19ee11d453153c80",
    "service": "https://data.example.com/prices",
-   "memberships": [
-    {
-     "key": "A",
-     "active": true
-    },
-    {
-     "key": "B",
-     "active": true
-    },
-    {
-     "key": "C",
-     "active": true
-    },
-    {
-     "key": "D",
-     "active": true
-    },
-    {
-     "key": "E",
-     "active": true
-    }
+   "members": 5,
+   "seats": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E"
    ],
    "first_reader": null,
    "attempts": [
@@ -128,39 +98,28 @@
    "reader": 2
   },
   {
-   "name": "no memberships",
+   "name": "no seats when the round was committed",
    "final_seed": "140bedbf9c3f6d56a9846d2ba7088798683f4da0c248231336e6a05679e4fdfe",
    "service": "https://sandbox.example.net/run/python",
-   "memberships": [],
+   "members": 0,
+   "seats": [
+    "A"
+   ],
    "first_reader": null,
    "attempts": [],
    "reader": null
   },
   {
-   "name": "one key holding three of five",
+   "name": "one key in three of five seats",
    "final_seed": "8b5b9db0c13db24256c829aa364aa90c6d2eba318b9232a4ab9313b954d3555f",
    "service": "https://sandbox.example.net/run/python",
-   "memberships": [
-    {
-     "key": "A",
-     "active": true
-    },
-    {
-     "key": "A",
-     "active": true
-    },
-    {
-     "key": "A",
-     "active": true
-    },
-    {
-     "key": "B",
-     "active": true
-    },
-    {
-     "key": "C",
-     "active": true
-    }
+   "members": 5,
+   "seats": [
+    "A",
+    "A",
+    "A",
+    "B",
+    "C"
    ],
    "first_reader": null,
    "attempts": [
@@ -184,65 +143,40 @@
    "reader": 4
   },
   {
-   "name": "every membership inactive",
-   "final_seed": "4fb62348858c2f6fbd6db27fa4c11edd8559119869d1034e2bd3390fd92b1a04",
+   "name": "every seat emptied since",
+   "final_seed": "283bb9deef02e6843abfb538efa1eca70801bd8a701c3f98191e123496339247",
    "service": "https://sandbox.example.net/run/python",
-   "memberships": [
-    {
-     "key": "A",
-     "active": false
-    },
-    {
-     "key": "B",
-     "active": false
-    },
-    {
-     "key": "C",
-     "active": false
-    },
-    {
-     "key": "D",
-     "active": false
-    },
-    {
-     "key": "E",
-     "active": false
-    }
-   ],
+   "members": 5,
+   "seats": [],
    "first_reader": null,
    "attempts": [
     3,
     1,
+    5,
+    1,
+    3,
+    4,
+    3,
+    1,
+    1,
+    3,
+    5,
+    5,
+    1,
     2,
-    3,
-    4,
-    1,
-    1,
-    4,
-    4,
-    1,
-    5,
-    3,
-    1,
-    5,
-    4,
+    2,
     5
    ],
    "reader": null
   },
   {
-   "name": "a second reading, only the first reader active",
+   "name": "a second reading, only the first reader seated",
    "final_seed": "f905b19542ed08c9a9c26543cca32e5711d207dcffb81b4cdb44ce0b989431c9",
    "service": "https://sandbox.example.net/run/python",
-   "memberships": [
-    {
-     "key": "A",
-     "active": true
-    },
-    {
-     "key": "B",
-     "active": false
-    }
+   "members": 2,
+   "seats": [
+    "A",
+    "A"
    ],
    "first_reader": "A",
    "attempts": [
@@ -266,98 +200,102 @@
    "reader": null
   },
   {
-   "name": "the first draw is inactive",
-   "final_seed": "9e153632d2f4c4e1611a227269d03fe28eed0b7e527a68dc3d0afba3bcac09a8",
+   "name": "the first seat drawn is no longer there",
+   "final_seed": "bc00525689a7313aaf2528060ddf7bea2701f5e40338d52a5ca27f55ffdb155e",
    "service": "https://sandbox.example.net/run/python",
-   "memberships": [
-    {
-     "key": "A",
-     "active": true
-    },
-    {
-     "key": "B",
-     "active": true
-    },
-    {
-     "key": "C",
-     "active": false
-    },
-    {
-     "key": "D",
-     "active": true
-    },
-    {
-     "key": "E",
-     "active": true
-    }
+   "members": 5,
+   "seats": [
+    "A",
+    "B",
+    "C",
+    "D"
    ],
    "first_reader": null,
    "attempts": [
+    5,
+    4,
     3,
+    1,
     4,
-    5,
-    4,
-    5,
-    2,
-    4,
-    4,
-    2,
     4,
     1,
+    5,
+    3,
+    3,
+    2,
+    2,
     2,
     1,
-    5,
-    1,
-    1
+    4,
+    3
    ],
    "reader": 4
   },
   {
-   "name": "the first draw is the first reader's key",
-   "final_seed": "f3ff8de6341ec9d297748044ba572a388e75e7b97aef535560f969500d44b16a",
+   "name": "the first seat drawn is the first reader's",
+   "final_seed": "36211a7a8b0e332b15fc6b08f479dfb0e283ea11b0bafbbffd7ed07358d6c569",
    "service": "https://sandbox.example.net/run/python",
-   "memberships": [
-    {
-     "key": "A",
-     "active": true
-    },
-    {
-     "key": "B",
-     "active": true
-    },
-    {
-     "key": "C",
-     "active": true
-    },
-    {
-     "key": "D",
-     "active": true
-    },
-    {
-     "key": "E",
-     "active": true
-    }
+   "members": 5,
+   "seats": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E"
    ],
-   "first_reader": "D",
+   "first_reader": "C",
    "attempts": [
-    4,
+    3,
     5,
     1,
-    4,
-    1,
-    2,
-    2,
-    3,
-    2,
-    1,
     2,
     3,
     4,
+    2,
+    3,
+    2,
+    3,
+    5,
+    3,
+    5,
     4,
-    4,
-    1
+    1,
+    2
    ],
    "reader": 5
+  },
+  {
+   "name": "seats taken after the round are never drawn",
+   "final_seed": "08e7e6e4c507a9b273cfabfe2be49eedda26c7134e99bf4534c19df1786f6617",
+   "service": "https://sandbox.example.net/run/python",
+   "members": 3,
+   "seats": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E"
+   ],
+   "first_reader": null,
+   "attempts": [
+    1,
+    2,
+    1,
+    2,
+    2,
+    3,
+    2,
+    1,
+    3,
+    2,
+    3,
+    1,
+    2,
+    1,
+    2,
+    3
+   ],
+   "reader": 1
   }
  ]
 }
