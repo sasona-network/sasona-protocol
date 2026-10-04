@@ -5,6 +5,14 @@ use sha2::{Digest, Sha256};
 
 pub const MAX_ATTEMPTS: u32 = 16;
 
+/// A seat of the roster when the reading is committed.
+pub struct Seat<'a> {
+    /// The key holding the membership in it.
+    pub key: &'a str,
+    /// The slot that membership sat down in.
+    pub since: u64,
+}
+
 /// The seat drawn at `attempt`, numbered from 1, out of the round's `members`
 /// (M, at least 1).
 pub fn s(final_seed: &[u8; 32], service: &str, attempt: u32, members: u32) -> u32 {
@@ -21,13 +29,23 @@ pub fn s(final_seed: &[u8; 32], service: &str, attempt: u32, members: u32) -> u3
     1 + acc as u32
 }
 
-/// The seat whose membership reads `service`, or None. `seats` is the roster
-/// when the reading is committed: the key in each seat, from seat 1.
-pub fn reader(final_seed: &[u8; 32], service: &str, members: u32, seats: &[&str], first_reader: Option<&str>) -> Option<u32> {
+/// The seat whose membership reads `service`, or None. A seat counts if it
+/// exists now, its membership sat down before the round was committed in
+/// `committed_slot`, and, for a second reading, it is not the first reader's.
+pub fn reader(
+    final_seed: &[u8; 32],
+    service: &str,
+    members: u32,
+    committed_slot: u64,
+    seats: &[Seat],
+    first_reader: Option<&str>,
+) -> Option<u32> {
     if members == 0 {
         return None;
     }
-    (0..MAX_ATTEMPTS)
-        .map(|a| s(final_seed, service, a, members))
-        .find(|&k| k as usize <= seats.len() && Some(seats[k as usize - 1]) != first_reader)
+    (0..MAX_ATTEMPTS).map(|a| s(final_seed, service, a, members)).find(|&k| {
+        seats
+            .get(k as usize - 1)
+            .is_some_and(|seat| seat.since < committed_slot && Some(seat.key) != first_reader)
+    })
 }

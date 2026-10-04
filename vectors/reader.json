@@ -7,8 +7,12 @@
    "final_seed": "7692c3ad3540bb803c020b3aee66cd8887123234ea0c6e7143c0add73ff431ed",
    "service": "https://sandbox.example.net/run/python",
    "members": 1,
+   "committed_slot": 1000,
    "seats": [
-    "A"
+    {
+     "key": "A",
+     "since": 900
+    }
    ],
    "first_reader": null,
    "attempts": [
@@ -36,12 +40,28 @@
    "final_seed": "222b0bd51fcef7e65c2e62db2ed65457013bab56be6fafeb19ee11d453153c80",
    "service": "https://sandbox.example.net/run/python",
    "members": 5,
+   "committed_slot": 1000,
    "seats": [
-    "A",
-    "B",
-    "C",
-    "D",
-    "E"
+    {
+     "key": "A",
+     "since": 900
+    },
+    {
+     "key": "B",
+     "since": 900
+    },
+    {
+     "key": "C",
+     "since": 900
+    },
+    {
+     "key": "D",
+     "since": 900
+    },
+    {
+     "key": "E",
+     "since": 900
+    }
    ],
    "first_reader": null,
    "attempts": [
@@ -69,12 +89,28 @@
    "final_seed": "222b0bd51fcef7e65c2e62db2ed65457013bab56be6fafeb19ee11d453153c80",
    "service": "https://data.example.com/prices",
    "members": 5,
+   "committed_slot": 1000,
    "seats": [
-    "A",
-    "B",
-    "C",
-    "D",
-    "E"
+    {
+     "key": "A",
+     "since": 900
+    },
+    {
+     "key": "B",
+     "since": 900
+    },
+    {
+     "key": "C",
+     "since": 900
+    },
+    {
+     "key": "D",
+     "since": 900
+    },
+    {
+     "key": "E",
+     "since": 900
+    }
    ],
    "first_reader": null,
    "attempts": [
@@ -102,8 +138,12 @@
    "final_seed": "140bedbf9c3f6d56a9846d2ba7088798683f4da0c248231336e6a05679e4fdfe",
    "service": "https://sandbox.example.net/run/python",
    "members": 0,
+   "committed_slot": 1000,
    "seats": [
-    "A"
+    {
+     "key": "A",
+     "since": 900
+    }
    ],
    "first_reader": null,
    "attempts": [],
@@ -114,12 +154,28 @@
    "final_seed": "8b5b9db0c13db24256c829aa364aa90c6d2eba318b9232a4ab9313b954d3555f",
    "service": "https://sandbox.example.net/run/python",
    "members": 5,
+   "committed_slot": 1000,
    "seats": [
-    "A",
-    "A",
-    "A",
-    "B",
-    "C"
+    {
+     "key": "A",
+     "since": 900
+    },
+    {
+     "key": "A",
+     "since": 900
+    },
+    {
+     "key": "A",
+     "since": 900
+    },
+    {
+     "key": "B",
+     "since": 900
+    },
+    {
+     "key": "C",
+     "since": 900
+    }
    ],
    "first_reader": null,
    "attempts": [
@@ -147,6 +203,7 @@
    "final_seed": "283bb9deef02e6843abfb538efa1eca70801bd8a701c3f98191e123496339247",
    "service": "https://sandbox.example.net/run/python",
    "members": 5,
+   "committed_slot": 1000,
    "seats": [],
    "first_reader": null,
    "attempts": [
@@ -174,9 +231,16 @@
    "final_seed": "f905b19542ed08c9a9c26543cca32e5711d207dcffb81b4cdb44ce0b989431c9",
    "service": "https://sandbox.example.net/run/python",
    "members": 2,
+   "committed_slot": 1000,
    "seats": [
-    "A",
-    "A"
+    {
+     "key": "A",
+     "since": 900
+    },
+    {
+     "key": "A",
+     "since": 900
+    }
    ],
    "first_reader": "A",
    "attempts": [
@@ -204,11 +268,24 @@
    "final_seed": "bc00525689a7313aaf2528060ddf7bea2701f5e40338d52a5ca27f55ffdb155e",
    "service": "https://sandbox.example.net/run/python",
    "members": 5,
+   "committed_slot": 1000,
    "seats": [
-    "A",
-    "B",
-    "C",
-    "D"
+    {
+     "key": "A",
+     "since": 900
+    },
+    {
+     "key": "B",
+     "since": 900
+    },
+    {
+     "key": "C",
+     "since": 900
+    },
+    {
+     "key": "D",
+     "since": 900
+    }
    ],
    "first_reader": null,
    "attempts": [
@@ -236,12 +313,28 @@
    "final_seed": "36211a7a8b0e332b15fc6b08f479dfb0e283ea11b0bafbbffd7ed07358d6c569",
    "service": "https://sandbox.example.net/run/python",
    "members": 5,
+   "committed_slot": 1000,
    "seats": [
-    "A",
-    "B",
-    "C",
-    "D",
-    "E"
+    {
+     "key": "A",
+     "since": 900
+    },
+    {
+     "key": "B",
+     "since": 900
+    },
+    {
+     "key": "C",
+     "since": 900
+    },
+    {
+     "key": "D",
+     "since": 900
+    },
+    {
+     "key": "E",
+     "since": 900
+    }
    ],
    "first_reader": "C",
    "attempts": [
@@ -269,12 +362,28 @@
    "final_seed": "08e7e6e4c507a9b273cfabfe2be49eedda26c7134e99bf4534c19df1786f6617",
    "service": "https://sandbox.example.net/run/python",
    "members": 3,
+   "committed_slot": 1000,
    "seats": [
-    "A",
-    "B",
-    "C",
-    "D",
-    "E"
+    {
+     "key": "A",
+     "since": 900
+    },
+    {
+     "key": "B",
+     "since": 900
+    },
+    {
+     "key": "C",
+     "since": 900
+    },
+    {
+     "key": "D",
+     "since": 900
+    },
+    {
+     "key": "E",
+     "since": 900
+    }
    ],
    "first_reader": null,
    "attempts": [
@@ -296,6 +405,104 @@
     3
    ],
    "reader": 1
+  },
+  {
+   "name": "the first seat drawn was sat in after the round",
+   "final_seed": "6b2e8456ccdc04142584589563b44037c83dc70746ab99bc0dc91c57e6544f26",
+   "service": "https://sandbox.example.net/run/python",
+   "members": 5,
+   "committed_slot": 1000,
+   "seats": [
+    {
+     "key": "A",
+     "since": 900
+    },
+    {
+     "key": "B",
+     "since": 900
+    },
+    {
+     "key": "C",
+     "since": 900
+    },
+    {
+     "key": "D",
+     "since": 900
+    },
+    {
+     "key": "E",
+     "since": 1005
+    }
+   ],
+   "first_reader": null,
+   "attempts": [
+    5,
+    2,
+    4,
+    2,
+    5,
+    2,
+    4,
+    3,
+    4,
+    3,
+    4,
+    1,
+    2,
+    5,
+    1,
+    3
+   ],
+   "reader": 2
+  },
+  {
+   "name": "sitting down in the slot the round was committed is too late",
+   "final_seed": "6b2e8456ccdc04142584589563b44037c83dc70746ab99bc0dc91c57e6544f26",
+   "service": "https://sandbox.example.net/run/python",
+   "members": 5,
+   "committed_slot": 1000,
+   "seats": [
+    {
+     "key": "A",
+     "since": 900
+    },
+    {
+     "key": "B",
+     "since": 900
+    },
+    {
+     "key": "C",
+     "since": 900
+    },
+    {
+     "key": "D",
+     "since": 900
+    },
+    {
+     "key": "E",
+     "since": 1000
+    }
+   ],
+   "first_reader": null,
+   "attempts": [
+    5,
+    2,
+    4,
+    2,
+    5,
+    2,
+    4,
+    3,
+    4,
+    3,
+    4,
+    1,
+    2,
+    5,
+    1,
+    3
+   ],
+   "reader": 2
   }
  ]
 }

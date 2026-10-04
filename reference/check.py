@@ -102,7 +102,7 @@ for c in RV["cases"]:
     m = c["members"]
     draws = [rd.s(f, c["service"], a, m) for a in range(rd.MAX_ATTEMPTS)] if m else []
     check(f"reader: {c['name']}: the draws", draws == c["attempts"])
-    check(f"reader: {c['name']}: seat {c['reader']}", rd.reader(f, c["service"], m, c["seats"], c["first_reader"]) == c["reader"])
+    check(f"reader: {c['name']}: seat {c['reader']}", rd.reader(f, c["service"], m, c["committed_slot"], c["seats"], c["first_reader"]) == c["reader"])
 
 print()
 print(f"{failures} failed" if failures else "all vectors match")

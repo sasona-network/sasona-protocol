@@ -216,6 +216,8 @@ A service that returned no reply at all, because it could not be reached or refu
 2. The member sends that service the code, and keeps the reply.
 3. The member reveals the nonce, the reply hash and the verdict.
 
+The reply hash **MUST** be of the first 10,000 bytes of what came back (2.4), never more. The program cannot see the reply, and a hash of a longer one is a reading its member can never back if challenged.
+
 At the reveal, the program builds the canonical question from the nonce itself and **MUST** refuse the reveal unless its hash is the committed one, so only a fair question can ever be revealed.
 
 **A nonce belongs to the reading that committed to it earliest.** The service learns the nonce when it is called, which is after the honest reading was committed. It can copy the nonce into a reading of its own, and reveal that first, but it can never commit earlier. So when a reading reveals a nonce that another reading already holds, the program **MUST** hand the nonce to it if it was committed in a strictly earlier slot, and **MUST** refuse it otherwise. Without this, a failing service could make every reading of itself impossible to reveal, and the reader would look like the one who backed out.
@@ -301,6 +303,8 @@ It counts only if:
 | the readers differ | it is a reading checking itself |
 | the recorded outcome follows 3.3 from the two verdicts | the outcome was misreported |
 
+A pair settled before one of its readings was upheld false (5.3) keeps the outcome recorded on chain, and by the first row no longer counts. A pair whose second reading was upheld false before settling never settles.
+
 ## 4. Members
 
 A member is someone with a stake locked in the network. Readings are taken by members, and the member who reads a service is drawn, not chosen.
@@ -318,9 +322,9 @@ The **roster** is the memberships that can be drawn, in seats numbered from 1 to
 - a membership that is taken sits in seat `A + 1`
 - a membership that asks to leave, or loses its stake, leaves its seat at once. The membership in the last seat moves into it, and the roster is one shorter
 
-So every seat holds an active membership, and nothing that has left stays on the roster to be drawn and passed over.
+So every seat holds an active membership, and nothing that has left stays on the roster to be drawn and passed over. Each seat also records the slot its membership sat down in, whether by joining or by moving up.
 
-When a round is committed, the program records **M**, the number of seats then.
+When a round is committed, the program records **M**, the number of seats then. Only a membership already in its seat at that slot can read for the round.
 
 ### 4.3 Drawing the reader
 
@@ -335,6 +339,7 @@ s(a) = 1 + ( int( HMAC-SHA256( key = final_seed,
 for attempts `a = 0, 1, 2, ...`. When the reading is committed, the reader is the membership in seat `s(a)` for the first attempt where:
 
 - seat `s(a)` exists now, that is `s(a) <= A`. The roster can be shorter than it was when the round was committed
+- the membership in it sat down before the round was committed. One that joined since, or moved up into the seat since, is passed over. Otherwise someone could leave, rejoin into the last seat and read whatever was drawn to it
 - for a second reading, the membership in it is not held by the key that took the first reading
 
 At most 16 attempts are made. If none qualifies, nobody reads `S` in this round.
@@ -356,8 +361,9 @@ A membership asks to leave, and leaves its seat at once. Its stake comes back af
 ### 4.5 What membership does and does not prove
 
 - **A membership is a stake, not a person.** Two memberships can be one person, and nothing here can tell.
-- **The stake is the same for everyone.** A stake that deters has to grow with what a false reading would be worth, which is the traffic a service carries. That needs prices on chain (part 6).
-- **Who reads is drawn, but a drawn member can decline,** by not committing. The service then goes unread in that round, and the record shows it. A member who leaves after being drawn hands the seat, and the reading, to whoever sat last.
+- **The stake is the same for everyone.** A stake that deters has to grow with what a false reading would be worth, which is the traffic a service carries. That needs purchases on chain (parts 7 and 8).
+- **Who reads is drawn, but a drawn member can decline,** by not committing, or by leaving. The service then goes to its next attempt or unread in that round, and the record shows which. The member who moves up into a freed seat does not read for rounds committed before the move.
+- **The reader picks the moment within the hour.** A reader working with a service can wait inside the window for it to be up.
 - **The opener writes the list and chooses when to open it.** As 1.7 says of the picks, an opener can also withhold a round after seeing the draw, which now includes its readers.
 
 ## 5. Challenges
@@ -392,7 +398,7 @@ If no answer holds by the deadline, anyone may uphold the challenge. Then:
 
 If the stake has already come back to the member, the reading still stops counting.
 
-> **Temporary.** Until chargebacks are on chain (part 7), the held stake cannot leave. Where it goes is decided there. The stake, the bond and the challenger's tenth are devnet figures: at these numbers a challenge can cost more than it wins. They are set together, from what readings are worth, once prices are on chain (part 6).
+> **Temporary.** Until chargebacks are on chain (part 7), the held stake cannot leave. Where it goes is decided there. The stake, the bond and the challenger's tenth are devnet figures: at these numbers a challenge can cost more than it wins. They are set together, from what readings are worth, once purchases are on chain (parts 7 and 8).
 
 ### 5.4 What a challenge does and does not prove
 
