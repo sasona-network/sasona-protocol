@@ -561,7 +561,11 @@ A replay is a reading, and counts as one (2.7) if its draw follows 7.4: it stand
 
 ## 8. Payment channels
 
-An agent buying a service many times a minute cannot put each payment on chain: a transaction costs more than most calls. A **channel** holds the agent's dollars in the program, and the agent pays by signing, off chain, how much the service may take from it so far. The service takes it on chain when it likes, once for many calls. The money is in nobody's hands but the program's, and the service can never take more than the agent signed.
+An agent does not pay a merchant itself. A **node** buys for it: our server today, any node later. The node pays the merchant at once, for each purchase, as the merchant asks, and the merchant never deals with anything else.
+
+What the agent owes the node is many small amounts, and putting each one on chain costs more than most calls. Today the agent keeps a balance with us instead, and we hold that money. A **channel** holds it in the program. The agent pays the node by signing, off chain, how much the node may take from the channel so far, and the node takes it on chain when it likes, once for many purchases. The money is in nobody's hands but the program's, and the node can never take more than the agent signed.
+
+In this section the agent is the **payer** and the node the **payee**.
 
 ### 8.1 The markup on every purchase
 
@@ -587,7 +591,7 @@ A channel records:
 
 Each channel holds its dollars in its own token account, owned by the channel's address, so that channels never wait on each other or on the pool. The payer pays the rent of both and gets it back when the channel closes. After every instruction that moves a channel's dollars, the program MUST check that its token account holds at least what was put in, less what was taken and the markup moved out of it. Not exactly: anyone can send dollars to the account, and an exact check would let one stray unit stop the channel. Anything more than the record goes back to the payer at close. The program MUST also check that what was taken plus the markup charged is at most what was put in.
 
-Apart from that, the payee is any address. A payer paying a service it found through a reading names the address that reading recorded (7.1), so that the channel pays the service the ranking stands behind.
+Apart from that, the payee is any address: the node the payer buys through.
 
 ### 8.3 A voucher
 
@@ -638,9 +642,9 @@ Solana checks ed25519 signatures in a separate instruction of the same transacti
 
 The program reads the key and the message through the header's offsets, the same ones the ed25519 program used, never at fixed positions. Each of these checks has been the hole in some deployed program. A program that finds the signature anywhere else in the transaction, or compares bytes other than the ones that were verified, can be made to accept a signature the signer never made.
 
-### 8.7 What a payee checks before serving
+### 8.7 What a node checks before buying
 
-A voucher is only worth what the channel can pay. Before serving, a payee checks on chain, or from what it has already seen:
+A voucher is only worth what the channel can pay. Before it buys for a payer, a node checks on chain, or from what it has already seen:
 
 - the channel exists, names it as payee, and has no close pending
 - `floor(100 × D / 115)` covers the new voucher
@@ -648,11 +652,13 @@ A voucher is only worth what the channel can pay. Before serving, a payee checks
 
 ### 8.8 What a channel does and does not do
 
-- **It takes the float off us.** The paper names holding agents' money as one of the places the network is centralised. A channel holds it in the program, and a payment is a signature, not a balance on our books.
-- **Payments in a channel are not covered.** A covered purchase (section 7) is recorded on chain one by one, at a minimum price, and can be charged back. A channel payment is not recorded and cannot be. A payer wanting cover buys through section 7.
-- **The payee is trusted to deliver,** call by call. The payer risks one call's price at a time, and stops signing when it is cheated.
-- **The markup is taken on what is paid out, not on what is signed.** Two parties can always settle outside the network. What the markup buys inside it is money held by the program rather than by either party, and a payee the ranking stands behind.
-- **The signer is the hook for part 9.** A payer can let a key with less power sign, and keep its own key offline. The payer must make that key itself: a key handed over by the service would let the service sign its own vouchers. A signer key that leaks can pay only the payee, up to what the channel holds. Part 9's ceiling is what bounds it further.
+- **It takes the float off us.** The paper names holding agents' money as one of the places the network is centralised. A channel holds it in the program, and what an agent owes for its purchases is a signature, not a balance on our books.
+- **The merchant is paid at once, outside the channel.** The node buys in real time, with its own money, and the channel only settles what the payer owes the node for it, many purchases at a time. A merchant never waits on a channel.
+- **A merchant that does not deliver is answered by the network, not by the channel.** The payer does not withhold what it owes the node: the node paid for the purchase. A covered purchase is paid back from the cover (section 7). The paper also counts chargebacks on each service, and a service with too many is removed from the network; that count is not part of this version (7.7).
+- **Payments through a channel are not covered one by one.** A covered purchase (section 7) is recorded on chain, at a minimum price, and can be charged back. The small purchases a channel settles are not recorded each, so a payer wanting cover on one buys it through section 7.
+- **The node is trusted to buy what it charges for.** The payer signs for purchases the node made for it, and risks one purchase's price at a time with a node that charges for nothing. It stops signing for that node.
+- **The markup is taken on what is paid out, not on what is signed.** Two parties can always settle outside the network. What the markup buys inside it is money held by the program rather than by either party, and the ranking and the cover the node buys through.
+- **The signer is the hook for part 9.** A payer can let a key with less power sign, and keep its own key offline. The payer must make that key itself: a key handed over by the node would let the node sign its own vouchers. A signer key that leaks can pay only the payee, up to what the channel holds. Part 9's ceiling is what bounds it further.
 - **A payee can close a channel as soon as it is funded.** It costs the payer a transaction, and nothing else.
 
 ### 8.9 Checking a channel

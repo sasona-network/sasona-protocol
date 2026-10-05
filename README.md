@@ -15,7 +15,7 @@ A member's software and ours have to reach the same answer from the same inputs:
 | | Section 5, challenges: a member shows the reply behind a reading, or loses the stake |
 | | Section 6, the ranking: services ranked by the lowest price a member who read them would insure them at |
 | | Section 7, chargebacks: a covered purchase, a replay by a member drawn for it, and who pays the buyer back |
-| | Section 8, payment channels: an agent's dollars held by the program, paid out against vouchers it signs, with the markup every purchase carries |
+| | Section 8, payment channels: an agent's dollars held by the program, paid to the node that buys for it against vouchers the agent signs, with the markup every purchase carries |
 
 ## Check an implementation
 
