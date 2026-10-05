@@ -585,7 +585,7 @@ A channel records:
 - the markup owed on what was taken, not yet moved to the network
 - the slot a close was asked for, if one was
 
-Each channel holds its dollars in its own token account, owned by the channel's address, so that channels never wait on each other or on the pool. The payer pays the rent of both and gets it back when the channel closes. After every instruction that touches a channel, the program MUST check that its token account holds at least what was put in, less what was taken and the markup moved out of it. Not exactly: anyone can send dollars to the account, and an exact check would let one stray unit stop the channel. Anything more than the record goes back to the payer at close. The program MUST also check that what was taken plus the markup charged is at most what was put in.
+Each channel holds its dollars in its own token account, owned by the channel's address, so that channels never wait on each other or on the pool. The payer pays the rent of both and gets it back when the channel closes. After every instruction that moves a channel's dollars, the program MUST check that its token account holds at least what was put in, less what was taken and the markup moved out of it. Not exactly: anyone can send dollars to the account, and an exact check would let one stray unit stop the channel. Anything more than the record goes back to the payer at close. The program MUST also check that what was taken plus the markup charged is at most what was put in.
 
 Apart from that, the payee is any address. A payer paying a service it found through a reading names the address that reading recorded (7.1), so that the channel pays the service the ranking stands behind.
 
@@ -603,7 +603,7 @@ A **voucher** is the signer's ed25519 signature over 90 bytes:
 
 The amount is **cumulative**: everything the payee may have taken from the channel, in dollar units, since it was opened. A payer paying for one more call signs a voucher larger than the last by that call's price. A larger voucher replaces every smaller one, and a payee needs to keep only the largest.
 
-The channel's address is never reused (8.2), so a voucher is worth something for one channel only. The cluster number is compiled into the program. A build for another cluster MUST carry another number, and the build MUST check it, so that a voucher signed on devnet is worth nothing on mainnet even if the program keeps its address.
+The channel's address is never reused (8.2), so a voucher is worth something for one channel only. The cluster number is compiled into the program, with the dollar it accepts. A build for another cluster MUST carry another number, and the build MUST refuse to compile until both are set for it, so that a voucher signed on devnet is worth nothing on mainnet even if the program keeps its address.
 
 ### 8.4 Taking payment
 
