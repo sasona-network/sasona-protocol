@@ -1,12 +1,14 @@
 //! Sasona protocol: the draw (SPEC.md section 1) here, the committed
 //! question (section 2) in `question`, second readings (section 3) in `pair`,
 //! drawing the reader (section 4) in `reader`, and the ranking (section 6)
-//! in `ranking`.
+//! in `ranking`, chargebacks (section 7) in `chargeback` and payment
+//! channels (section 8) in `channel`.
 //!
 //! Written from the specification rather than translated from the Python
 //! reference. Both are ours; an implementation by somebody else is what
 //! would really test the specification.
 
+pub mod channel;
 pub mod chargeback;
 pub mod pair;
 pub mod question;

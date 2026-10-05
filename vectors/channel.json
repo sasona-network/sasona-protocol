@@ -1,0 +1,202 @@
+{
+ "version": "0.8.0",
+ "markups": [
+  {
+   "price": 0,
+   "markup": 0
+  },
+  {
+   "price": 1,
+   "markup": 1
+  },
+  {
+   "price": 7,
+   "markup": 2
+  },
+  {
+   "price": 20,
+   "markup": 3
+  },
+  {
+   "price": 100000,
+   "markup": 15000
+  },
+  {
+   "price": 1000000,
+   "markup": 150000
+  },
+  {
+   "price": 100007,
+   "markup": 15002
+  }
+ ],
+ "payables": [
+  {
+   "name": "the channel covers it",
+   "voucher": 50,
+   "put_in": 100,
+   "payable": 50
+  },
+  {
+   "name": "exactly a dollar and its markup",
+   "voucher": 2000000,
+   "put_in": 1150000,
+   "payable": 1000000
+  },
+  {
+   "name": "one unit short of that",
+   "voucher": 2000000,
+   "put_in": 1149999,
+   "payable": 999999
+  },
+  {
+   "name": "too little for anything",
+   "voucher": 1,
+   "put_in": 1,
+   "payable": 0
+  }
+ ],
+ "voucher": {
+  "program": "7eiHSnDkM4WjJdY36D2Yqsjw893mCMUtBAwMCQ5adL99",
+  "cluster": 1,
+  "channel": "9d8b1036bcf6aefc4a5b871aa91579bc4b0648ebfb15619465d202deecc6f5de",
+  "amount": 100007,
+  "message": "7361736f6e612f766f75636865722f763162cf4a7a0ea9793d816dd6f073523408e65ea2e2e07b8a658357e84a400345f4019d8b1036bcf6aefc4a5b871aa91579bc4b0648ebfb15619465d202deecc6f5de00000000000186a7",
+  "signer": "2fec00bfb669467c0a6c81ed7990cf8ed5a0aa3418ebb7ffcd53c6758ca9f804",
+  "signature": "e54e626ebfff50539abc44c476d672b69c861ab46484b11aefdada74b8e680eb8608cd71e4b38ce46fcf3c17f68f14c21742f27501ad2da466574f4f50502609",
+  "message_for_cluster_2": "7361736f6e612f766f75636865722f763162cf4a7a0ea9793d816dd6f073523408e65ea2e2e07b8a658357e84a400345f4029d8b1036bcf6aefc4a5b871aa91579bc4b0648ebfb15619465d202deecc6f5de00000000000186a7"
+ },
+ "life": [
+  {
+   "name": "open with $1",
+   "op": [
+    "open",
+    1000000
+   ],
+   "result": null
+  },
+  {
+   "name": "pay a voucher of 100,000",
+   "op": [
+    "pay",
+    100000,
+    10
+   ],
+   "result": [
+    100000,
+    15000
+   ]
+  },
+  {
+   "name": "pay 100,007: 7 more, and the markup on the total less what was charged",
+   "op": [
+    "pay",
+    100007,
+    11
+   ],
+   "result": [
+    7,
+    2
+   ]
+  },
+  {
+   "name": "the same voucher again",
+   "op": [
+    "pay",
+    100007,
+    12
+   ],
+   "result": "refused"
+  },
+  {
+   "name": "sweep the markup owed",
+   "op": [
+    "sweep"
+   ],
+   "result": 15002
+  },
+  {
+   "name": "sweep with nothing owed",
+   "op": [
+    "sweep"
+   ],
+   "result": "refused"
+  },
+  {
+   "name": "a voucher larger than the channel can pay pays what it can",
+   "op": [
+    "pay",
+    900000,
+    13
+   ],
+   "result": [
+    769558,
+    115433
+   ]
+  },
+  {
+   "name": "someone sends 10 units to the channel's account",
+   "op": [
+    "donate",
+    10
+   ],
+   "result": null
+  },
+  {
+   "name": "the payee closes",
+   "op": [
+    "close",
+    14,
+    true
+   ],
+   "result": [
+    115433,
+    10
+   ]
+  }
+ ],
+ "notice": {
+  "asked": 5000000,
+  "notice_slots": 648000,
+  "put_in": 1000000,
+  "voucher": 1000,
+  "cases": [
+   {
+    "name": "pay on the last slot of the notice",
+    "op": "pay",
+    "slot": 5647999,
+    "allowed": true
+   },
+   {
+    "name": "pay on the slot the notice ends",
+    "op": "pay",
+    "slot": 5648000,
+    "allowed": false
+   },
+   {
+    "name": "finish on the last slot of the notice",
+    "op": "finish",
+    "slot": 5647999,
+    "allowed": false
+   },
+   {
+    "name": "finish on the slot the notice ends",
+    "op": "finish",
+    "slot": 5648000,
+    "allowed": true
+   },
+   {
+    "name": "add during the notice",
+    "op": "add",
+    "slot": 5000001,
+    "allowed": false
+   },
+   {
+    "name": "ask to close a second time",
+    "op": "ask",
+    "slot": 5000001,
+    "allowed": false
+   }
+  ]
+ }
+}

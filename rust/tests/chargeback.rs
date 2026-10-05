@@ -14,6 +14,7 @@ fn every_chargeback_value() {
     for c in v["amounts"].as_array().unwrap() {
         let price = u(&c["price"]);
         assert_eq!((premium(price, u(&c["rate"])), fee(price), counted(price)), (u(&c["premium"]), u(&c["fee"]), u(&c["counted"])));
+        assert_eq!(sasona_draw::channel::markup(price), u(&c["markup"]));
     }
     for c in v["rooms"].as_array().unwrap() {
         let got = room(u(&c["stake"]), u(&c["usd_reserve"]), u(&c["coin_reserve"]), u(&c["open"]), u(&c["owed"]));

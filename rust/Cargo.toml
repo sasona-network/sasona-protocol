@@ -12,3 +12,4 @@ serde_json = "1"
 
 [dev-dependencies]
 hex = "0.4"
+ed25519-dalek = "2"

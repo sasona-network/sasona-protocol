@@ -133,6 +133,63 @@ for c in R["seats"]:
                          set(c["passed_over_keys"]), set(c["declined"]))
     check(f"replay seat: {c['name']}", got == c["seat"])
 
+
+import channel as ch  # noqa: E402
+
+for c in CV["amounts"]:
+    check(f"markup on a covered purchase of {c['price']}", ch.markup(c["price"]) == c["markup"])
+HV = json.loads((Path(__file__).parent.parent / "vectors" / "channel.json").read_text(encoding="ascii"))
+for c in HV["markups"]:
+    check(f"markup on {c['price']}", ch.markup(c["price"]) == c["markup"])
+for c in HV["payables"]:
+    check(f"payable: {c['name']}", ch.payable(c["voucher"], c["put_in"]) == c["payable"])
+W = HV["voucher"]
+ALPHA = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
+n = 0
+for ch_ in W["program"]:
+    n = n * 58 + ALPHA.index(ch_)
+program = n.to_bytes(32, "big")
+message = ch.voucher_message(program, W["cluster"], bytes.fromhex(W["channel"]), W["amount"])
+check("voucher: the 90 bytes signed", message.hex() == W["message"] and len(message) == 90)
+check("voucher: it verifies", ch.verify(bytes.fromhex(W["signer"]), message, bytes.fromhex(W["signature"])))
+check("voucher: it does not verify for another cluster",
+      not ch.verify(bytes.fromhex(W["signer"]), bytes.fromhex(W["message_for_cluster_2"]), bytes.fromhex(W["signature"])))
+life = None
+for s in HV["life"]:
+    op = s["op"]
+    try:
+        if op[0] == "open":
+            life = ch.Channel(op[1])
+            got = None
+        elif op[0] == "pay":
+            got = list(life.pay(op[1], op[2]))
+        elif op[0] == "sweep":
+            got = life.sweep()
+        elif op[0] == "donate":
+            got = life.donate(op[1])
+        elif op[0] == "close":
+            got = list(life.close(op[1], op[2]))
+    except ch.Refused:
+        got = "refused"
+    check(f"channel: {s['name']}", got == s["result"])
+N = HV["notice"]
+for c in N["cases"]:
+    k = ch.Channel(N["put_in"])
+    k.ask_to_close(N["asked"])
+    try:
+        if c["op"] == "pay":
+            k.pay(N["voucher"], c["slot"])
+        elif c["op"] == "finish":
+            k.close(c["slot"], by_payee=False)
+        elif c["op"] == "add":
+            k.add(1, c["slot"])
+        elif c["op"] == "ask":
+            k.ask_to_close(c["slot"])
+        ok = True
+    except ch.Refused:
+        ok = False
+    check(f"notice: {c['name']}", ok == c["allowed"])
+
 print()
 print(f"{failures} failed" if failures else "all vectors match")
 sys.exit(1 if failures else 0)

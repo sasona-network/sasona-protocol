@@ -1,8 +1,8 @@
 # Sasona protocol
 
-**Version 0.7.0.** This version specifies the draw (section 1), the committed question (section 2), second readings (section 3), members (section 4), challenges (section 5), the ranking (section 6) and chargebacks (section 7).
+**Version 0.8.0.** This version specifies the draw (section 1), the committed question (section 2), second readings (section 3), members (section 4), challenges (section 5), the ranking (section 6), chargebacks (section 7) and payment channels (section 8).
 
-0.7.0 adds section 7, and a reading now records where its service asks to be paid (2.5). 0.6.0 added section 6. 0.5.0 added sections 4 and 5, and limits a reply to its first 10,000 bytes (2.4); no reading so far had a reply that long. 0.4.0 added section 3. 0.3.0 added section 2. 0.2.0 added that a list can be drawn once (1.3, 1.8) and stated two limits more plainly (1.7). Every value 0.1.0 computes is unchanged.
+0.8.0 adds section 8, and the markup on every purchase (8.1), which a covered purchase now pays too (7.2). 0.7.0 added section 7, and a reading now records where its service asks to be paid (2.5). 0.6.0 added section 6. 0.5.0 added sections 4 and 5, and limits a reply to its first 10,000 bytes (2.4); no reading so far had a reply that long. 0.4.0 added section 3. 0.3.0 added section 2. 0.2.0 added that a list can be drawn once (1.3, 1.8) and stated two limits more plainly (1.7). Every value 0.1.0 computes is unchanged.
 
 The words **MUST** and **MUST NOT** mark rules that change a result. An implementation that does otherwise computes different values from every other one and is not conformant.
 
@@ -494,6 +494,7 @@ A **covered purchase** is recorded on chain when it is made. It names the readin
 
 - the **price**, to the address recorded on the covering reading, where it settles for good. The merchant is never asked for it back
 - the **premium**, the price times the quote's rate in basis points, divided by 10,000 and rounded down, to the member who set the quote
+- the **markup** on the price (8.1), to the network
 
 The buyer names the highest rate they accept, and the purchase is refused if the quote was raised past it before the purchase landed.
 
@@ -523,6 +524,8 @@ A chargeback is settled by a **replay**: a reading of the service, like any othe
 
 The cover pays as a claim does (part 1): dollars leave the pool, and equal coin is burned from the pool and from the cover, so the price does not move. What the member owes the cover is that coin. It is taken from their stake into the cover once the covering reading can no longer be challenged (5.1), so a stake cannot be turned into dollars early by a member charging back their own purchase while a challenge to their reading could still come. A membership left with less than a whole stake (4.1) leaves its seat and starts its notice to leave (4.4).
 
+The markup a covered purchase paid (8.1) is not paid back, whatever the replay finds.
+
 When a reading is shown false (section 5), its member's taken stake goes into the cover, first to pay back what they owe it (5.3).
 
 The cover pays only what it can (part 1): a claim may not empty it, nor take more dollars than the pool holds. A chargeback the cover cannot pay yet waits, and is paid when it can.
@@ -538,7 +541,7 @@ A replay is a reading, and counts as one (2.7) if its draw follows 7.4: it stand
 - **A replay that never happens pays the buyer,** whether the members drawn were working with someone or only offline, and the insurer pays for it.
 - **A replayer can make up their verdict.** Working with the member who set the quote, they can make up a reply that passes, and the buyer loses the deposit. Working with the buyer, they can make up one that fails, and the member pays for a service that works. Section 5 cannot catch a reply made up well (5.4). The draw, and passing over the buyer's and the quoter's seats, is all that stands in the way; a buyer can let up to 7 draws pass to look for a friend (7.4).
 - **Someone has to draw again.** Draws do not repeat on their own. A member whose quote is charged back has every reason to keep drawing until a replay happens, and if nobody does within 7 days, they pay.
-- **A first chargeback costs the member who set the quote.** It needs no deposit, so the replayer's 5% is the member's. A rival can buy once every 30 days at the minimum price and charge it back. The minimum price is what bounds that.
+- **A first chargeback costs the member who set the quote.** It needs no deposit, so the replayer's 5% is the member's. A rival can buy once every 30 days at the minimum price and charge it back, paying the price's markup each time. The minimum price is what bounds that.
 - **The payout address is its reader's word,** and the reader is usually the one who quotes. A member who records their own address and buys from themselves only moves dollars to themselves that their own stake pays back.
 - **Who is passed over.** The draw passes over the buyer's and the quoting member's seats, and those that declined. Other members who quote the same service, or who have chargebacks open against it, are not passed over, and nor is the service's operator: the program cannot see everyone who holds a position.
 - **The draw's entropy** is a slot's hash, with the limits 1.7 states.
@@ -551,11 +554,117 @@ A replay is a reading, and counts as one (2.7) if its draw follows 7.4: it stand
 | Check | If it fails |
 |---|---|
 | the purchase was paid to the address its covering reading recorded, under a quote that stood (6.2) | the buyer was paid back on a purchase nobody insured |
+| the purchase paid its markup (8.1) | the network was bypassed |
 | each draw follows 7.4 from its slot, and passes over the seats 7.4 names | the replay was chosen |
 | what was paid, and by whom, follows 7.5 from the replay's verdict or its absence | the outcome was misreported |
 | what the member owed was taken from their stake once their reading could no longer be challenged | an insurer was let off |
 
-## 8. What this version does not specify
+## 8. Payment channels
+
+An agent buying a service many times a minute cannot put each payment on chain: a transaction costs more than most calls. A **channel** holds the agent's dollars in the program, and the agent pays by signing, off chain, how much the service may take from it so far. The service takes it on chain when it likes, once for many calls. The money is in nobody's hands but the program's, and the service can never take more than the agent signed.
+
+### 8.1 The markup on every purchase
+
+Every purchase carries a **markup**, paid by the buyer on top of the price: for a price `p`, `markup(p) = ceil(15 × p / 100)`, the 15 points of the fee table. This holds for a covered purchase (7.2) and for a payment through a channel. The markup is held in the network's fee account and turned into coin later, by anyone, as the fee table sets: 5 of its 15 points stay in the pool as depth, and the rest is shared among the participants.
+
+Participants' shares go to the network until purchases can be told apart from a participant paying itself, and the program MUST keep it so. A markup proves only that someone paid it, not that a purchase happened: a buyer can buy from their own address, and a payer can pay an address of their own through a channel. Paying a participant from such a markup would let them buy coin at a discount.
+
+A covered purchase pays the markup on its price, beside the premium. It is not counted in the room to insure. A chargeback does not return it: the buyer is paid back the price (7.5), and the markup has already paid for the reading and the cover the buyer bought with it.
+
+### 8.2 A channel
+
+A channel is opened by a **payer**, who MUST sign the opening, for one **payee** address. Its address is derived from `"channel"`, the payer, the payee and an identifier as 8 bytes little-endian. The program keeps for each payer one record, never closed, holding the next identifier. It starts at 0, only opening a channel creates it or moves it, and each opening takes its identifier and adds one. So no channel address is ever used twice. The payer pays that record's rent once, and does not get it back.
+
+The payee MUST NOT be the pool, the network's vault, or the owner of the fee account or of the cover's vault: money sent there would be counted by nobody. Any other address of the program's is a donation that does no harm. A channel named as payee, for one, gets dollars in its account that go back to its own payer at close.
+
+A channel records:
+
+- the **signer**: the key whose vouchers the channel honours. It is fixed when the channel is opened, and is the payer's own key unless the payer names another. The signer MUST sign the opening, and MUST NOT be the payee.
+- what has been put in. Only the payer adds to it, and only while no close is pending.
+- what the payee has taken so far, and the markup charged on it
+- the markup owed on what was taken, not yet moved to the network
+- the slot a close was asked for, if one was
+
+Each channel holds its dollars in its own token account, owned by the channel's address, so that channels never wait on each other or on the pool. The payer pays the rent of both and gets it back when the channel closes. After every instruction that touches a channel, the program MUST check that its token account holds at least what was put in, less what was taken and the markup moved out of it. Not exactly: anyone can send dollars to the account, and an exact check would let one stray unit stop the channel. Anything more than the record goes back to the payer at close. The program MUST also check that what was taken plus the markup charged is at most what was put in.
+
+Apart from that, the payee is any address. A payer paying a service it found through a reading names the address that reading recorded (7.1), so that the channel pays the service the ranking stands behind.
+
+### 8.3 A voucher
+
+A **voucher** is the signer's ed25519 signature over 90 bytes:
+
+| Bytes | |
+|---|---|
+| 17 | `"sasona/voucher/v1"` |
+| 32 | the program's address |
+| 1 | the cluster: 1 for devnet. Mainnet will have its own number. |
+| 32 | the channel's address |
+| 8 | the amount, big-endian |
+
+The amount is **cumulative**: everything the payee may have taken from the channel, in dollar units, since it was opened. A payer paying for one more call signs a voucher larger than the last by that call's price. A larger voucher replaces every smaller one, and a payee needs to keep only the largest.
+
+The channel's address is never reused (8.2), so a voucher is worth something for one channel only. The cluster number is compiled into the program. A build for another cluster MUST carry another number, and the build MUST check it, so that a voucher signed on devnet is worth nothing on mainnet even if the program keeps its address.
+
+### 8.4 Taking payment
+
+Anyone may show the program a voucher for a channel, while it is open or within the notice (8.5). With `D` what has been put in and `v` the voucher's amount, the program:
+
+1. checks the signature as 8.6 requires
+2. works out what the channel can pay: `x = min(v, floor(100 × D / 115))`, computed without overflow. This is the largest amount whose price and markup fit in `D`.
+3. refuses unless `x` is more than what the payee has taken
+4. pays the difference to the payee's dollar account: an account of the token program whose mint is the dollar and whose owner is the payee
+5. charges `markup(x)` less the markup already charged, and records it on the channel as owed to the network
+
+The markup stays in the channel's own account until anyone sweeps it, or the channel closes. Then it moves to the network's fee account and is counted with the markup held there. A sweep with nothing owed is refused. A payment touches only the channel, its account and the payee's.
+
+So a voucher the channel cannot fully cover still pays what it can. Taking a voucher at once or in many pieces costs the same markup. Whatever is left when the channel closes is `D` less what was taken and `markup` of it. A payee whose dollar account is frozen or closed cannot be paid until it fixes it; that costs only the payee.
+
+### 8.5 Closing
+
+- **The payee may close** at any time. The markup owed moves to the network, and whatever is left goes back to the payer, with the rent.
+- **The payer may ask to close,** once. A second ask is refused, and an ask cannot be withdrawn. The notice ends at the slot it was asked in plus **648,000**, about 72 hours. Before that slot the payee may still take payment, and nobody may finish closing. From that slot on, nobody may take payment, and anyone may finish closing: the markup owed moves to the network, and whatever is left goes back to the payer, with the rent.
+
+The notice is counted in slots, so a cluster that stops does not use it up. A payee must take its largest voucher within the notice, or lose it. A payee that takes payment at least once a day is never at risk of more than a day's vouchers.
+
+### 8.6 Checking the signature
+
+Solana checks ed25519 signatures in a separate instruction of the same transaction, which the program reads back. The program MUST refuse unless:
+
+- the instruction just before the one taking payment is an instruction of the ed25519 program `Ed25519SigVerify111111111111111111111111111`
+- it checks exactly one signature
+- its three instruction-index fields are all `u16::MAX`, so that the key, the signature and the message are read from that instruction itself
+- the key, read at the key offset that instruction's header gives, is the channel's signer, byte for byte
+- the message, read at the message offset and length that header gives, is 90 bytes long and exactly those of 8.3 for this channel and the amount shown
+
+The program reads the key and the message through the header's offsets, the same ones the ed25519 program used, never at fixed positions. Each of these checks has been the hole in some deployed program. A program that finds the signature anywhere else in the transaction, or compares bytes other than the ones that were verified, can be made to accept a signature the signer never made.
+
+### 8.7 What a payee checks before serving
+
+A voucher is only worth what the channel can pay. Before serving, a payee checks on chain, or from what it has already seen:
+
+- the channel exists, names it as payee, and has no close pending
+- `floor(100 × D / 115)` covers the new voucher
+- the signer is the key it expects
+
+### 8.8 What a channel does and does not do
+
+- **It takes the float off us.** The paper names holding agents' money as one of the places the network is centralised. A channel holds it in the program, and a payment is a signature, not a balance on our books.
+- **Payments in a channel are not covered.** A covered purchase (section 7) is recorded on chain one by one, at a minimum price, and can be charged back. A channel payment is not recorded and cannot be. A payer wanting cover buys through section 7.
+- **The payee is trusted to deliver,** call by call. The payer risks one call's price at a time, and stops signing when it is cheated.
+- **The markup is taken on what is paid out, not on what is signed.** Two parties can always settle outside the network. What the markup buys inside it is money held by the program rather than by either party, and a payee the ranking stands behind.
+- **The signer is the hook for part 9.** A payer can let a key with less power sign, and keep its own key offline. The payer must make that key itself: a key handed over by the service would let the service sign its own vouchers. A signer key that leaks can pay only the payee, up to what the channel holds. Part 9's ceiling is what bounds it further.
+- **A payee can close a channel as soon as it is funded.** It costs the payer a transaction, and nothing else.
+
+### 8.9 Checking a channel
+
+| Check | If it fails |
+|---|---|
+| everything paid out of a channel is backed by a voucher its signer signed, at most its amount in total | the payee took what it was not given |
+| the markup paid out of a channel is `markup` of everything taken | the network was bypassed, or the payer overcharged |
+| what goes back to the payer is what was put in, less what was taken and its markup | the payer was short-changed |
+| each channel's account holds at least what was put in, less what was taken and the markup moved out | the channel's money went somewhere it should not |
+
+## 9. What this version does not specify
 
 - **What goes into a round's list.** Which services are open for testing at a time, and how demand puts them there, comes with the parts that bring members and questions on chain.
 - **Who opens rounds and how often.** For now anyone may open one, for a bond, and it proves nothing except that its draw was fair.
@@ -563,7 +672,7 @@ A replay is a reading, and counts as one (2.7) if its draw follows 7.4: it stand
 
 ## Test values
 
-[`vectors/draw.json`](vectors/draw.json), [`vectors/question.json`](vectors/question.json), [`vectors/pair.json`](vectors/pair.json), [`vectors/reader.json`](vectors/reader.json) and [`vectors/ranking.json`](vectors/ranking.json) and [`vectors/chargeback.json`](vectors/chargeback.json) hold inputs, the results every implementation must produce, and what every implementation must refuse:
+[`vectors/draw.json`](vectors/draw.json), [`vectors/question.json`](vectors/question.json), [`vectors/pair.json`](vectors/pair.json), [`vectors/reader.json`](vectors/reader.json) [`vectors/ranking.json`](vectors/ranking.json), [`vectors/chargeback.json`](vectors/chargeback.json) and [`vectors/channel.json`](vectors/channel.json) hold inputs, the results every implementation must produce, and what every implementation must refuse:
 
 ```bash
 python reference/check.py

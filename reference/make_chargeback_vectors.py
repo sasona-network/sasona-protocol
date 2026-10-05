@@ -10,6 +10,7 @@ import hashlib
 import json
 from pathlib import Path
 
+import channel as ch
 import chargeback as cb
 import reader as rd
 
@@ -24,16 +25,16 @@ def seated(keys, since=None):
 
 def main():
     amounts = [
-        # price, rate, premium, fee, counted
-        (1_000_000, 150, 15_000, 50_000, 1_050_000),
-        (1_000_000, 1, 100, 50_000, 1_050_000),
-        (19, 150, 0, 0, 19),
-        (100_000, 10_000, 100_000, 5_000, 105_000),
+        # price, rate, premium, fee, counted, markup
+        (1_000_000, 150, 15_000, 50_000, 1_050_000, 150_000),
+        (1_000_000, 1, 100, 50_000, 1_050_000, 150_000),
+        (19, 150, 0, 0, 19, 3),
+        (100_000, 10_000, 100_000, 5_000, 105_000, 15_000),
     ]
     amount_cases = []
-    for price, rate, prem, f, c in amounts:
-        assert (cb.premium(price, rate), cb.fee(price), cb.counted(price)) == (prem, f, c), price
-        amount_cases.append({"price": price, "rate": rate, "premium": prem, "fee": f, "counted": c})
+    for price, rate, prem, f, c, m in amounts:
+        assert (cb.premium(price, rate), cb.fee(price), cb.counted(price), ch.markup(price)) == (prem, f, c, m), price
+        amount_cases.append({"price": price, "rate": rate, "premium": prem, "fee": f, "counted": c, "markup": m})
 
     rooms = [
         # stake, usd_reserve, coin_reserve, open, owed, room
@@ -90,7 +91,7 @@ def main():
                            "seat": got})
 
     out = {
-        "version": "0.7.0",
+        "version": "0.8.0",
         "amounts": amount_cases,
         "rooms": room_cases,
         "settlements": settle_cases,

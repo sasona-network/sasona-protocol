@@ -1,33 +1,37 @@
 {
- "version": "0.7.0",
+ "version": "0.8.0",
  "amounts": [
   {
    "price": 1000000,
    "rate": 150,
    "premium": 15000,
    "fee": 50000,
-   "counted": 1050000
+   "counted": 1050000,
+   "markup": 150000
   },
   {
    "price": 1000000,
    "rate": 1,
    "premium": 100,
    "fee": 50000,
-   "counted": 1050000
+   "counted": 1050000,
+   "markup": 150000
   },
   {
    "price": 19,
    "rate": 150,
    "premium": 0,
    "fee": 0,
-   "counted": 19
+   "counted": 19,
+   "markup": 3
   },
   {
    "price": 100000,
    "rate": 10000,
    "premium": 100000,
    "fee": 5000,
-   "counted": 105000
+   "counted": 105000,
+   "markup": 15000
   }
  ],
  "rooms": [
